@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>bundleid</key>
+	<string>alfred-cron.spr</string>
+	<key>connections</key>
+	<dict>
+		<key>35820A65-CEE3-49EC-9DC2-761C657EFDEE</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>C7CDDBC4-2D2F-45B3-A70B-643147B60211</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+			</dict>
+		</array>
+		<key>EAB22576-E49D-465C-9C12-4A3DBA6A413B</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>35820A65-CEE3-49EC-9DC2-761C657EFDEE</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+			</dict>
+		</array>
+	</dict>
+	<key>createdby</key>
+	<string>Shawn Patrick Rice</string>
+	<key>description</key>
+	<string></string>
+	<key>disabled</key>
+	<false/>
+	<key>name</key>
+	<string>Alfred Cron</string>
+	<key>objects</key>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>lastpathcomponent</key>
+				<false/>
+				<key>onlyshowifquerypopulated</key>
+				<true/>
+				<key>output</key>
+				<integer>0</integer>
+				<key>removeextension</key>
+				<false/>
+				<key>sticky</key>
+				<false/>
+				<key>text</key>
+				<string>{query}</string>
+				<key>title</key>
+				<string>Alfred Cron</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.output.notification</string>
+			<key>uid</key>
+			<string>C7CDDBC4-2D2F-45B3-A70B-643147B60211</string>
+			<key>version</key>
+			<integer>0</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>escaping</key>
+				<integer>127</integer>
+				<key>script</key>
+				<string>query="{query}"
+if [ "$query" = "start" ]; then
+	nohup sh alfred-cron.sh start &gt; /dev/null 2&gt;&amp;1 &amp;
+	echo "The daemon is now running."
+elif [ "$query" = "stop" ]; then
+	./alfred-cron.sh stop &gt; /dev/null 2&gt;&amp;1
+	echo "The daemon has stopped."
+elif [ "$query" = "add" ]; then
+	sh manage.sh
+else
+	echo "Invalid command"
+fi</string>
+				<key>type</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>35820A65-CEE3-49EC-9DC2-761C657EFDEE</string>
+			<key>version</key>
+			<integer>0</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>argumenttype</key>
+				<integer>1</integer>
+				<key>escaping</key>
+				<integer>127</integer>
+				<key>keyword</key>
+				<string>cron</string>
+				<key>script</key>
+				<string>sh script-filter.sh</string>
+				<key>title</key>
+				<string>Alfred Cron</string>
+				<key>type</key>
+				<integer>0</integer>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.scriptfilter</string>
+			<key>uid</key>
+			<string>EAB22576-E49D-465C-9C12-4A3DBA6A413B</string>
+			<key>version</key>
+			<integer>0</integer>
+		</dict>
+	</array>
+	<key>readme</key>
+	<string></string>
+	<key>uidata</key>
+	<dict>
+		<key>35820A65-CEE3-49EC-9DC2-761C657EFDEE</key>
+		<dict>
+			<key>ypos</key>
+			<real>10</real>
+		</dict>
+		<key>C7CDDBC4-2D2F-45B3-A70B-643147B60211</key>
+		<dict>
+			<key>ypos</key>
+			<real>10</real>
+		</dict>
+		<key>EAB22576-E49D-465C-9C12-4A3DBA6A413B</key>
+		<dict>
+			<key>ypos</key>
+			<real>10</real>
+		</dict>
+	</dict>
+	<key>webaddress</key>
+	<string></string>
+</dict>
+</plist>

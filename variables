@@ -1,0 +1,27 @@
+#!/bin/sh
+
+# This is just a set of variables that can be reused between many scripts for
+# ease.
+
+workflowName="Alfred Cron"
+bundle="alfred.cron.spr"
+
+data="$HOME/Library/Application Support/Alfred 2/Workflow Data/$bundle"
+cache="$HOME/Library/Caches/com.runningwithcrayons.Alfred-2/Workflow Data/$bundle"
+lastRun="$data/last-run"
+
+daemonName="alfred-cron"
+
+pidDir="$cache"
+pidFile="$pidDir/$daemonName.pid"
+
+logDir="$data/logs"
+logFile="$logDir/$daemonName.log"
+logMaxSize=2048   # 1mb
+
+runInterval=60 # In seconds
+
+scriptDir="$data/scripts"
+enabledScriptDir="$data/scripts/enabled"
+
+pashuapath="$HOME/Library/Application Support/Alfred 2/Workflow Data/alfred.bundler-aries/assets/utility/Pashua/default/Pashua.app/Contents/MacOS/Pashua"
