@@ -70,18 +70,7 @@
 				<key>escaping</key>
 				<integer>127</integer>
 				<key>script</key>
-				<string>query="{query}"
-if [ "$query" = "start" ]; then
-	nohup sh alfred-cron.sh start &gt; /dev/null 2&gt;&amp;1 &amp;
-	echo "The daemon is now running."
-elif [ "$query" = "stop" ]; then
-	./alfred-cron.sh stop &gt; /dev/null 2&gt;&amp;1
-	echo "The daemon has stopped."
-elif [ "$query" = "add" ]; then
-	sh manage.sh
-else
-	echo "Invalid command"
-fi</string>
+				<string>sh script.sh "{query}"</string>
 				<key>type</key>
 				<integer>0</integer>
 			</dict>
