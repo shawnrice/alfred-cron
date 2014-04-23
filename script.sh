@@ -70,7 +70,7 @@ display dialog "Do you really want to delete 'JOBNAME'?" buttons {"Confirm", "Ca
 			rm "$errorDir/$script"
 		fi
 		rm "$scriptDir/$script"
-		echo "Deleted job: $name"
+		echo "Deleted job: \"$name\""
 	fi
 else
 	echo "Invalid command $query"
