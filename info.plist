@@ -91,7 +91,7 @@
 				<key>keyword</key>
 				<string>cron</string>
 				<key>script</key>
-				<string>sh script-filter.sh</string>
+				<string>sh script-filter.sh "{query}"</string>
 				<key>title</key>
 				<string>Alfred Cron</string>
 				<key>type</key>

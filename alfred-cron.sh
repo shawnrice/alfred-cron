@@ -173,7 +173,9 @@ loop() {
 
 log() {
   # Generic log function.
-  echo "$1" >> "$logFile"
+  echo "$1" > "$cache/tmpRunFile"
+  cat "$logFile" > "$cache/tmpRunFile"
+  mv "$cache/tmpRunFile" "$logFile"
 }
 
 

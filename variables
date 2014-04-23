@@ -19,6 +19,8 @@ logDir="$data/logs"
 logFile="$logDir/$daemonName.log"
 logMaxSize=2048   # 1mb
 
+errorDir="$data/errors"
+
 runInterval=60 # In seconds
 
 scriptDir="$data/scripts"

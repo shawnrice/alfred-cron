@@ -198,5 +198,5 @@ else
 	echo "$name"="$interval" >> "$data/registry"
 
 	# Enable the script
-	ln -s "$scriptDir/$name" "$enabledScriptDir/$name"
+	ln "$scriptDir/$name" "$enabledScriptDir/$name"
 fi
