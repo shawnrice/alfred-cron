@@ -110,7 +110,7 @@ checkDaemon() {
   if [ -z "$oldPid" ]; then
     echo 0
     return 0
-  elif [[ `ps aux | grep "$oldPid" | grep -v grep` > /dev/null ]]; then
+  elif [[ `ps aux | grep "$oldPid" | grep "$daemonName" | grep -v grep` > /dev/null ]]; then
     if [ -f "$pidFile" ]; then
       if [[ `cat "$pidFile"` = "$oldPid" ]]; then
         # Daemon is running.

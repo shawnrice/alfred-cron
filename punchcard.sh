@@ -26,15 +26,18 @@ runCommand() {
   # The below could be great to use with an updated version of terminal notifier.
   # if [[ `sw_vers -productVersion` =~ "10.9" ]]; then
   #  icon=`pwd`"/icons/alert.ico"
-  #  "$tn" -title 'Alfred Cron Error' -message "There is an error with your job: \"$name.\" ASDAPlease fix it." -appIcon "$icon" -execute "osascript -e 'tell application \"Alfred 2\" to search \"cron er\"'"
+  #  "$tn" -title 'Alfred Cron Error' -message "There is an error with your job: \"$name.\" Please fix it."  -execute "osascript -e 'tell application \"Alfred 2\" to search \"cron er\"'"
   # else
   #  "$tn" -title 'Alfred Cron Error' -message "There is an error with your job: \"$name.\" Please fix it." -execute "osascript -e 'tell application \"Alfred 2\" to search \"cron er\"'"
   # fi
+  icon=`pwd`"/icons/alert.ico"
   "$tn" -title 'Alfred Cron Error' \
      -subtitle "Job: \"$name.\"" \
      -message "The job has been disabled." \
      -execute "osascript -e 'tell application \"Alfred 2\" to search \"cron er\"'" \
-     -sender "com.runningwithcrayons.Alfred-2"
+     -appIcon "$icon" \
+     -group alfredcron \
+     # -sender "com.runningwithcrayons.Alfred-2" \
  fi
  echo "$output" >> "$cache/tmpRunFile"
  cat "$logFile" >> "$cache/tmpRunFile"

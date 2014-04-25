@@ -27,3 +27,4 @@ scriptDir="$data/scripts"
 enabledScriptDir="$data/scripts/enabled"
 
 pashuapath="$HOME/Library/Application Support/Alfred 2/Workflow Data/alfred.bundler-aries/assets/utility/Pashua/default/Pashua.app/Contents/MacOS/Pashua"
+tn="$HOME/Library/Application Support/Alfred 2/Workflow Data/alfred.bundler-aries/assets/utility/terminal-notifier/default/terminal-notifier.app/Contents/MacOS/terminal-notifier"

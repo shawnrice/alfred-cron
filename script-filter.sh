@@ -91,7 +91,7 @@ elif [[ "$arg" =~ ^de ]]; then
 				file=$(basename "$f")
 					name=`echo $file | tr '_' ' '`
 					name=`echo "$name" | awk '{for(i=1;i<=NF;i++){sub(".",substr(toupper($i),1,1),$i)}print}'`
-					addResult "delete-$file" "delete-$file" "Delete \"$name\"" "" "icons/minus-red.png" "yes" "delete \"$name\""
+					addResult "delete-$file" "delete-$file" "Delete \"$name\"" "" "icons/trash-dark.png" "yes" "delete \"$name\""
 			fi
 		done
 	else
@@ -100,7 +100,7 @@ elif [[ "$arg" =~ ^de ]]; then
 elif [[ "$arg" =~ ^er ]]; then
 	dir=`find "$errorDir/" -type f -maxdepth 1 | sed s,^./,,`
 	if [ -z "$dir" ]; then
-		addResult '' '' 'Alfred Cron' "All scripts are running just fine." 'icons/box-check-green.png' 'no' ''
+		addResult '' '' 'Alfred Cron' "All scripts are running just fine." 'icons/check-green.png' 'no' ''
 	else
 		addResult '' '' 'There are errors in some scripts.' "All error scripts have been disabled. Please debug them." 'icons/exclamation-red.png' 'no' ''
 		for f in "$errorDir/"*
@@ -119,15 +119,22 @@ elif [[ "$arg" =~ ^er ]]; then
 else
 	if [ "$running" = "FALSE" ]; then
 		addResult "" "" "Cron is off" "Cron status" "icons/warning-yellow.png" "yes" "status"
-		addResult "startcron" "start" "Start Cron" "Cron" "icons/on-green.png" "yes" "start"
+		addResult "startcron" "start" "Start Cron" "Cron" "icons/play-green.png" "yes" "start"
 	else
 		pid=`cat "$pidFile"`
-		addResult "" "" "Cron is running with PID: $pid" "Cron status" "icons/box-check-green.png" "yes" "status"
-		addResult "stopcron" "stop" "Stop Cron" "Cron" "icons/delete-red.png" "yes" "stop"
+		addResult "" "" "Cron is running with PID: $pid" "Cron status" "icons/check-green.png" "yes" "status"
+		addResult "stopcron" "stop" "Pause Cron" "Cron" "icons/pause-red.png" "yes" "stop"
 	fi
 	dir=`find "$errorDir/" -type f -maxdepth 1 | sed s,^./,,`
 	if [ ! -z "$dir" ]; then
 		addResult 'cronerrors' 'error' 'There are errors in some scripts.' "All scripts with errors have been disabled. Please debug them." 'icons/exclamation-red.png' 'no' 'error'
+	fi
+	if [ -e "/Library/LaunchAgents/com.alfred.cron.plist" ]; then
+			addResult "launchdstatus" "" "Alfred Cron will start at bootup" "Cron" "icons/check-green.png" "no" ""
+	elif [ -e "$HOME/Library/LaunchAgents/com.alfred.cron.plist" ]; then
+		addResult "launchdstatus" "" "Alfred Cron will start at user login" "Cron" "icons/check-green.png" "yes" "add"
+	else
+		addResult "launchdstatus" "" "The launchd agent has not been installed." "Cron" "icons/warning-yellow.png" "yes" "add"
 	fi
 	addResult "addcronjob" "add" "Add a Cron Entry" "Cron" "icons/plus-green.png" "yes" "add"
 fi

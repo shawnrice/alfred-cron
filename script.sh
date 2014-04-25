@@ -13,6 +13,7 @@ log() {
 query="$1"
 now=`date +'%Y-%m-%d  %H:%M:%S'`
 if [ "$query" = "start" ]; then
+	# "$data/assets"
 	nohup sh alfred-cron.sh start > /dev/null 2>&1 &
 	echo "The daemon is now running."
 elif [ "$query" = "stop" ]; then
@@ -75,3 +76,20 @@ display dialog "Do you really want to delete 'JOBNAME'?" buttons {"Confirm", "Ca
 else
 	echo "Invalid command $query"
 fi
+
+
+# install launchd
+# echo $(cat 'assets/com.alfred.cron.plist' | sed 's|REPLACE_ALFRED_CRONPATH|'"$data/assets/com.alfred.cron.plist"'|g') > "$data/assets/com.alfred.cron.plist"
+# install launchd system
+# sudo ln "$data/assets/com.alfred.cron.plist" "/Library/LaunchAgents/com.alfred.cron.plist"
+#
+# install launchd user
+# sudo ln "$data/assets/com.alfred.cron.plist" "$HOME/Library/LaunchAgents/com.alfred.cron.plist"
+#
+# uninstall launchd
+# if [ -e "/Library/LaunchAgents/com.alfred.cron.plist" ]; then
+# 	sudo rm "/Library/LaunchAgents/com.alfred.cron.plist"
+# fi
+# if [ -e "$HOME/Library/LaunchAgents/com.alfred.cron.plist" ]; then
+# 	sudo rm "$HOME/Library/LaunchAgents/com.alfred.cron.plist"
+# fi
