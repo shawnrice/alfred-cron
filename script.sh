@@ -54,7 +54,6 @@ elif [[ "$query" =~ clear ]]; then
 	fi
 elif [[ "$query" =~ delete ]]; then
 	script=${query#delete-}
-	echo "here"
 	name=`echo $script | tr '_' ' '`
 	name=`echo "$name" | awk '{for(i=1;i<=NF;i++){sub(".",substr(toupper($i),1,1),$i)}print}'`
 	applescripticon="$(echo `pwd`/icons/warning.png | tr '/' ':' | awk '{print substr($0, 2, length($0) - 1)}')"
