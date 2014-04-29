@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# Example use-case for Alfred Cron: "Pause Backblaze backups when connected to specific network."
+# Rationale: at home, my ISP seems to punish me when I'm backing up to Backblaze, and I have my
+# setup Backblaze to backup continuously (ever since the Great Harddrive Crash of 2010).
+
+# So, when I'm connected to my home network, I want to pause the backups so that I can still use
+# the Internet.
+
+# My list of home networks. This can be expanded to anything.
+blacklist=()
+blacklist+=("Shark Week")
+blacklist+=("Shark Week 5")
+blacklist+=("Shark Week Mobile")
+
+# Step 1: check if Backblaze is trying to back up.
+if [[ ! $(ps aux | grep bztransmit | grep -v grep) ]]; then
+	# Backblaze isn't trying to back up, so exit.
+	exit 0
+fi
+
+# Step 2: check to make sure that the airport card is actually on.
+# Get the Wifi Hardware Name
+wifi=$(networksetup -listallhardwareports | grep -A 2 -E "AirPort|Wi-Fi" | grep -m 1 -o -e en[0-9]);
+if [[ $(networksetup -getairportpower $wifi | grep -c On) = "0" ]]; then
+	# It's not on, so exit.
+	exit 0
+fi
+
+# Step 3: get the name of the network we're connected to.
+# Get the current SSID (network name) that I'm connected to.
+network=`/System/Library/PrivateFrameworks/Apple80211.framework/Versions/A/Resources/airport -I | grep SSID | grep -v BSSID | sed -e 's|^ *||' -e 's|^SSID: ||' -e 's| *$||'`
+
+# Go through all the network names in the blacklist and see if we're on one.
+for ssid in "${blacklist[@]}";
+do
+	if [ "$ssid" == "$network" ]; then
+		# Yup, we're on a blacklisted network, so pause Backblaze.
+		/Library/Backblaze/bztransmit -pausebackup
+		exit 0
+	fi
+done
+
+exit 0

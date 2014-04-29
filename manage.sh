@@ -1,11 +1,15 @@
 #!/bin/bash
+# Consider switching to Platypus
+# http://sveinbjorn.org/files/manpages/PlatypusDocumentation.html
+# Current limitation with Pashua implementation: for some reason, it seems to
+# be cutting longer scripts down when entered into the command box.
 . variables
 
 if [ "$1" = "edit" ]  && [ ! -z "$2" ] && [ -f "$scriptDir/$2" ]; then
 	timeDefault="120"
 	pDefault="Seconds"
-	
-	dTitle="Modify Alfred Cron Entry"
+
+	dTitle="Modify Alfred Cron Job"
 
 	# Let's actually reset the time/interval if one exists in the registry
 	if [ -f "$data/registry" ]; then
@@ -39,8 +43,8 @@ if [ "$1" = "edit" ]  && [ ! -z "$2" ] && [ -f "$scriptDir/$2" ]; then
 	nameDefault="$2"
 	commandDefault=`cat "$scriptDir/$2" | awk 1 ORS='[return]'`
 else
-	dTitle="Add Alfred Cron Entry"
-	nameDefault="My Entry Label"
+	dTitle="Add Alfred Cron Job"
+	nameDefault="My Job Label"
 	timeDefault="120"
 	pDefault="Seconds"
 	commandDefault=""
@@ -49,7 +53,7 @@ fi
 pashua_run() {
 	pashua_configfile=`/usr/bin/mktemp /tmp/pashua_XXXXXXXXX`
 	echo "$1" > $pashua_configfile
-	
+
 	if [ ! "$pashuapath" ]
 	then
 		echo "Error: Pashua could not be found"
@@ -83,7 +87,7 @@ pashua_run() {
 } # pashua_run()
 
 trim() {
-	
+
 	# if [[ $1 =~ \[return\]\[return\] ]]; then
 	# 	trim `echo "$1" | sed -e 's|\[return\]\[return\]|\[return\]|g'`
 	if [[ "$1" =~ \[return\]$ ]]; then
@@ -103,7 +107,7 @@ conf="
 # Label
 name.type = textfield
 name.label = Label
-name.default = My Entry Label
+name.default = My Job Label
 name.width = 360
 
 # Add Time
@@ -116,7 +120,7 @@ time.width = 40
 p.type = popup
 p.width = 80
 p.x = 50
-p.y = 287
+p.y = 387
 p.option = Seconds
 p.option = Minutes
 p.option = Hours
@@ -127,9 +131,11 @@ p.default = $pDefault
 # Commands
 command.type = textbox
 command.width = 600
-command.height = 200
+command.height = 300
 command.default = $commandDefault
-command.label = Shell Command to Execute (you can use standard shell variables)
+command.fonttype = fixed
+command.fontsize = small
+command.label = Shell Command to Execute. Call longer scripts rather than writing them out as text may be truncated.
 
 # Add a cancel button with default label
 cb.type=cancelbutton
@@ -150,19 +156,20 @@ fi
 
 pashua_run "$conf" 'utf8'
 
+msg="Add job failed either via User Cancel or blank field (name, interval, or command)"
 if [ "$cb" = "1" ]; then
-	echo "FALSE"
+	echo $msg
 elif [ -z "$name" ]; then
-	echo "FALSE"
+	echo $msg
 elif [ -z "$time" ]; then
-	echo "FALSE"
+	echo $msg
 elif [ -z "$command" ]; then
-	echo "FALSE"
+	echo $msg
 else
 	name=`echo "$name" | \
 	tr '[:upper:]' '[:lower:]' | \
 	sed -E 's|[^a-zA-Z0-9\-]+|_|g'`
-	
+
 	case $p in
 		Seconds)
 			interval=$time
@@ -180,19 +187,20 @@ else
 			interval=$((time*60*60*24*7))
 		;;
 	esac
-	
+
 	if [ -f "$scriptDir/$name" ]; then
 		echo "Error: Script already exists."
 		exit 1
 	fi
 
 	# Save the script.
-	echo "#!/bin/bash[return]set -o errexit[return]"`trim "$command"` | \
+	# echo "set -o errexit[return]"`trim "$command"` | \
+	echo "set -o errexit[return]$command" | \
 	 sed -e 's|^ *||' \
 	     -e 's| *$||' \
 			 -e 's|\[return\]|\'$'\n|g' > "$scriptDir/$name"
-	
-	# Delete an entry if the name is already in there. This error should already
+
+	# Delete an job if the name is already in there. This error should already
 	# have been accounted for.
 	awk '!/'"$name"'/' "$data/registry" > "$cache/registry" && mv "$cache/registry" "$data/registry"
 	echo "$name"="$interval" >> "$data/registry"

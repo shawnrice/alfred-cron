@@ -1,0 +1,51 @@
+#!/bin/bash
+
+# This script uses a nice little utility called "tag" that can be installed via
+# Homebrew with 'brew install tag'; or you can find the project on Github
+# https://github.com/jdberry/tag
+
+# We need to set the IFS (separator character) to deal with filenames with spaces.
+IFS=$'\n'
+
+# Within the last week
+# Let's color file Green
+for file in $(find -E "$HOME/Downloads" -type f -maxdepth 1 -mtime -7 -regex '.*(png|gif|jpg|jpeg|bmp|svg|tiff|tif)$');
+do
+  tags=`tag -l "$file" | sed 's|'"$file"'||g'`
+  if [ -z $(echo $tags | grep Green ) ]; then
+    tag -a "Green" "$file"
+  fi
+  if [ ! -z $(echo $tags | grep Red ) ]; then
+    tag -r "Red" "$file"
+  fi
+done
+
+
+# Older than one week but within the last month
+# Let's remove the tags
+for file in $(find -E "$HOME/Downloads" -type f -maxdepth 1 -mtime +7 -mtime -30 -regex '.*(png|gif|jpg|jpeg|bmp|svg|tiff|tif)$');
+do
+  tags=`tag -l "$file" | sed 's|'"$file"'||g'`
+  if [ ! -z $(echo $tags | grep Green ) ]; then
+    tag -r "Green" "$file"
+  fi
+  if [ ! -z $(echo $tags | grep Red ) ]; then
+    tag -r "Red" "$file"
+  fi
+  # echo $file
+done
+
+
+# Older than one month
+# Let's remove the old colors and move them to the "~/Pictures" folder
+for file in $(find -E "$HOME/Downloads" -type f -maxdepth 1 -mtime +30 -regex '.*(png|gif|jpg|jpeg|bmp|svg|tiff|tif)$');
+do
+  tags=`tag -l "$file" | sed 's|'"$file"'||g'`
+  if [ ! -z $(echo $tags | grep Green ) ]; then
+    tag -r Green "$file"
+  fi
+  if [ ! -z $(echo $tags | grep Red ) ]; then
+    tag -r Red "$file"
+  fi
+  mv "$file" "$HOME/Pictures"
+done

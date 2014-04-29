@@ -73,23 +73,37 @@ display dialog "Do you really want to delete 'JOBNAME'?" buttons {"Confirm", "Ca
 		rm "$scriptDir/$script"
 		echo "Deleted job: \"$name\""
 	fi
+# To implement a launchd script to start the agent running. Currently, not all of it is working, so it's commented out for initial release
+# elif [[ "$query" =~ ^install ]]; then
+# 	if [ ! -d "$data/assets" ]; then
+# 		mkdir "$data/assets"
+# 	fi
+# 	if [ ! -f 'assets/com.alfred.cron.plist' ]; then
+# 		echo "Cannot find launchd template in workflow directory. Aborting."
+# 		exit 1
+# 	else
+# 		me=`pwd`
+# 		if [ -f "$data/assets/com.alfred.cron.plist" ]; then
+# 			rm "$data/assets/com.alfred.cron.plist"
+# 		fi
+# 		echo $(cat 'assets/com.alfred.cron.plist' | sed 's|REPLACE_ALFRED_CRONPATH|'"$me/alfred-cron.sh"'|g') > "$data/assets/com.alfred.cron.plist"
+# 	fi
+# 		# script="chown $USER '$data/assets/com.alfred.cron.plist'"
+# 		# osascript -e "do shell script \"$script\" with administrator privileges"
+# 		ln "$data/assets/com.alfred.cron.plist" "$HOME/Library/LaunchAgents/com.alfred.cron.plist"
+# 		script="launchctl load '$HOME/Library/LaunchAgents/com.alfred.cron.plist'"
+# 		osascript -e "do shell script \"$script\" with administrator privileges"
+# elif [[ "$query" =~ ^uninstall ]]; then
+# 	if [ -e "/Library/LaunchDaemons/com.alfred.cron.plist" ]; then
+# 		script="launchctl unload '/Library/LaunchDaemons/com.alfred.cron.plist'"
+# 		osascript -e "do shell script \"$script\" with administrator privileges"
+# 		script="rm '/Library/LaunchDaemons/com.alfred.cron.plist'"
+# 		osascript -e "do shell script \"$script\" with administrator privileges"
+# 	fi
+# 	if [ -e "$HOME/Library/LaunchDaemons/com.alfred.cron.plist" ]; then
+# 		launchctl unload "$HOME/Library/LaunchDaemons/com.alfred.cron.plist"
+# 		rm "$HOME/Library/LaunchDaemons/com.alfred.cron.plist"
+# 	fi
 else
 	echo "Invalid command $query"
 fi
-
-
-# install launchd
-# echo $(cat 'assets/com.alfred.cron.plist' | sed 's|REPLACE_ALFRED_CRONPATH|'"$data/assets/com.alfred.cron.plist"'|g') > "$data/assets/com.alfred.cron.plist"
-# install launchd system
-# sudo ln "$data/assets/com.alfred.cron.plist" "/Library/LaunchAgents/com.alfred.cron.plist"
-#
-# install launchd user
-# sudo ln "$data/assets/com.alfred.cron.plist" "$HOME/Library/LaunchAgents/com.alfred.cron.plist"
-#
-# uninstall launchd
-# if [ -e "/Library/LaunchAgents/com.alfred.cron.plist" ]; then
-# 	sudo rm "/Library/LaunchAgents/com.alfred.cron.plist"
-# fi
-# if [ -e "$HOME/Library/LaunchAgents/com.alfred.cron.plist" ]; then
-# 	sudo rm "$HOME/Library/LaunchAgents/com.alfred.cron.plist"
-# fi

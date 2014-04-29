@@ -25,9 +25,10 @@ if [[ "$arg" =~ ^l ]] || [[ "$arg" =~ ^ed ]]; then
 		addResult '' '' 'No cron jobs have been defined.' "$count" 'icons/warning-yellow.png' 'no' ''
 	else
 		for f in "$scriptDir/"*
-		do			
+		do
 			if [ -f "$f" ]; then
-				file=$(basename "$f")
+				file=$(basename "$f" | tr '_' ' ')
+				file=`echo "$file" | awk '{for(i=1;i<=NF;i++){sub(".",substr(toupper($i),1,1),$i)}print}'`
 				if [ -e "$enabledScriptDir/$file" ]; then
 					icon='icons/radio-on-blue.png'
 				else
@@ -77,7 +78,7 @@ elif [[ "$arg" =~ ^en ]]; then
 			fi
 		done
 		if [[ $count = 0 ]]; then
-			addResult '' '' 'All cron jobs are enabled.' "" 'icons/warning-yellow.png' 'no' ''	
+			addResult '' '' 'All cron jobs are enabled.' "" 'icons/warning-yellow.png' 'no' ''
 		fi
 	else
 		addResult '' '' 'No cron jobs have been defined.' "" 'icons/warning-yellow.png' 'no' ''
@@ -96,7 +97,7 @@ elif [[ "$arg" =~ ^de ]]; then
 		done
 	else
 		addResult '' '' 'No cron jobs have been defined.' "" 'icons/warning-yellow.png' 'no' ''
-	fi	
+	fi
 elif [[ "$arg" =~ ^er ]]; then
 	dir=`find "$errorDir/" -type f -maxdepth 1 | sed s,^./,,`
 	if [ -z "$dir" ]; then
@@ -116,6 +117,13 @@ elif [[ "$arg" =~ ^er ]]; then
 		done
 		addResult "cronclearallerrors" "clear-all" "Clear all errors." "" "icons/refresh-yellow.png" "yes" "error clear all"
 	fi
+# To implement a launchd script to start the agent running. Currently, not all of it is working, so it's commented out for initial release
+# elif [[ "$arg" =~ ^inst ]]; then
+# 	if [ -e "$HOME/Library/LaunchDaemons/com.alfred.cron.plist" ]; then
+# 		addResult "" "" "The launchd agent has already been installed." "" "icons/warning-yellow.png" "no" ""
+# 	else
+# 		addResult "launchdstatus" "installlaunchd-user" "Install the launchd agent for this user" "Cron" "icons/warning-yellow.png" "yes" "installlaunchd-user"
+# 	fi
 else
 	if [ "$running" = "FALSE" ]; then
 		addResult "" "" "Cron is off" "Cron status" "icons/warning-yellow.png" "yes" "status"
@@ -129,14 +137,14 @@ else
 	if [ ! -z "$dir" ]; then
 		addResult 'cronerrors' 'error' 'There are errors in some scripts.' "All scripts with errors have been disabled. Please debug them." 'icons/exclamation-red.png' 'no' 'error'
 	fi
-	if [ -e "/Library/LaunchAgents/com.alfred.cron.plist" ]; then
-			addResult "launchdstatus" "" "Alfred Cron will start at bootup" "Cron" "icons/check-green.png" "no" ""
-	elif [ -e "$HOME/Library/LaunchAgents/com.alfred.cron.plist" ]; then
-		addResult "launchdstatus" "" "Alfred Cron will start at user login" "Cron" "icons/check-green.png" "yes" "add"
-	else
-		addResult "launchdstatus" "" "The launchd agent has not been installed." "Cron" "icons/warning-yellow.png" "yes" "add"
-	fi
+	# To implement a launchd script to start the agent running. Currently, not all of it is working, so it's commented out for initial release
+	# if [ -e "$HOME/Library/LaunchAgents/com.alfred.cron.plist" ]; then
+	# 	addResult "launchdstatus" "uninstallinstalllaunchd-user" "Alfred Cron will start at user login" "Cron" "icons/check-green.png" "no" "uninstalllaunchd"
+	# else
+	# 	addResult "installlaunchd" "installlaunchd" "The launchd agent has not been installed." "Cron" "icons/warning-yellow.png" "no" "installlaunchd"
+	# fi
 	addResult "addcronjob" "add" "Add a Cron Entry" "Cron" "icons/plus-green.png" "yes" "add"
+	addResult "listcronjobs" "" "List Cron Jobs" "Cron" "icons/info.png" "no" "list"
 fi
 # Print the results
 getXMLResults
