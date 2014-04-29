@@ -22,7 +22,7 @@ fi
 if [[ "$arg" =~ ^l ]] || [[ "$arg" =~ ^ed ]]; then
 	dir=`find "$scriptDir/" -type f -maxdepth 1 | sed s,^./,,`
 	if [ -z "$dir" ]; then
-		addResult '' '' 'No cron jobs have been defined.' "$count" 'icons/warning-yellow.png' 'no' ''
+		addResult '' '' 'No cron jobs have been defined.' "$count" 'icons/warning.png' 'no' ''
 	else
 		for f in "$scriptDir/"*
 		do
@@ -30,16 +30,16 @@ if [[ "$arg" =~ ^l ]] || [[ "$arg" =~ ^ed ]]; then
 				file=$(basename "$f" | tr '_' ' ')
 				file=`echo "$file" | awk '{for(i=1;i<=NF;i++){sub(".",substr(toupper($i),1,1),$i)}print}'`
 				if [ -e "$enabledScriptDir/$file" ]; then
-					icon='icons/radio-on-blue.png'
+					icon='icons/circle_ok.png'
 				else
-					icon='icons/radio-off-blue.png'
+					icon='icons/circle.png'
 				fi
 				if [ ! -z "$second" ]; then
 					if [[ "$file" =~ "$second" ]]; then
 						addResult "edit-$file" "edit-$file" "Edit $file" "$second" "$icon" "yes" "edit-$file"
 					fi
 				else
-					if [[ `echo $icon | grep '\-on\-'` ]]; then
+					if [[ `echo $icon | grep '_ok'` ]]; then
 						addResult "edit-$file" "edit-$file" "Edit $file" "Job Enabled" "$icon" "yes" "edit-$file"
 					else
 						addResult "edit-$file" "edit-$file" "Edit $file" "Job Disabled" "$icon" "yes" "edit-$file"
@@ -51,14 +51,14 @@ if [[ "$arg" =~ ^l ]] || [[ "$arg" =~ ^ed ]]; then
 elif [[ "$arg" =~ ^di ]]; then
 	dir=`find "$enabledScriptDir/" -type f -maxdepth 1 | sed s,^./,,`
 	if [ -z "$dir" ]; then
-		addResult '' '' 'There are no enabled cron jobs.' '' 'icons/warning-yellow.png' 'no' ''
+		addResult '' '' 'There are no enabled cron jobs.' '' 'icons/warning.png' 'no' ''
 	else
 		for f in "$enabledScriptDir/"*
 		do
 			file=$(basename "$f")
 			name=`echo $file | tr '_' ' '`
 			name=`echo "$name" | awk '{for(i=1;i<=NF;i++){sub(".",substr(toupper($i),1,1),$i)}print}'`
-			addResult "disable-$file" "disable-$file" "Disable \"$name\"" "" "icons/pause-green.png" "yes" "disable \"$name\""
+			addResult "disable-$file" "disable-$file" "Disable \"$name\"" "" "icons/pause.png" "yes" "disable \"$name\""
 		done
 	fi
 elif [[ "$arg" =~ ^en ]]; then
@@ -73,15 +73,15 @@ elif [[ "$arg" =~ ^en ]]; then
 					count=$((count+1))
 					name=`echo $file | tr '_' ' '`
 					name=`echo "$name" | awk '{for(i=1;i<=NF;i++){sub(".",substr(toupper($i),1,1),$i)}print}'`
-					addResult "enable-$file" "enable-$file" "Enable \"$name\"" "" "icons/green-play.png" "yes" "enable \"$name\""
+					addResult "enable-$file" "enable-$file" "Enable \"$name\"" "" "icons/play.png" "yes" "enable \"$name\""
 				fi
 			fi
 		done
 		if [[ $count = 0 ]]; then
-			addResult '' '' 'All cron jobs are enabled.' "" 'icons/warning-yellow.png' 'no' ''
+			addResult '' '' 'All cron jobs are enabled.' "" 'icons/warning.png' 'no' ''
 		fi
 	else
-		addResult '' '' 'No cron jobs have been defined.' "" 'icons/warning-yellow.png' 'no' ''
+		addResult '' '' 'No cron jobs have been defined.' "" 'icons/warning.png' 'no' ''
 	fi
 elif [[ "$arg" =~ ^de ]]; then
 	dir=`find "$scriptDir/" -type f -maxdepth 1 | sed s,^./,,`
@@ -96,14 +96,14 @@ elif [[ "$arg" =~ ^de ]]; then
 			fi
 		done
 	else
-		addResult '' '' 'No cron jobs have been defined.' "" 'icons/warning-yellow.png' 'no' ''
+		addResult '' '' 'No cron jobs have been defined.' "" 'icons/warning.png' 'no' ''
 	fi
 elif [[ "$arg" =~ ^er ]]; then
 	dir=`find "$errorDir/" -type f -maxdepth 1 | sed s,^./,,`
 	if [ -z "$dir" ]; then
-		addResult '' '' 'Alfred Cron' "All scripts are running just fine." 'icons/check-green.png' 'no' ''
+		addResult '' '' 'Alfred Cron' "All scripts are running just fine." 'icons/square_ok.png' 'no' ''
 	else
-		addResult '' '' 'There are errors in some scripts.' "All error scripts have been disabled. Please debug them." 'icons/exclamation-red.png' 'no' ''
+		addResult '' '' 'There are errors in some scripts.' "All error scripts have been disabled. Please debug them." 'icons/warning.png' 'no' ''
 		for f in "$errorDir/"*
 		do
 		if [ -f "$f" ]; then
@@ -111,40 +111,40 @@ elif [[ "$arg" =~ ^er ]]; then
 				if [ -f "$errorDir/$file" ]; then
 					name=`echo $file | tr '_' ' '`
 					name=`echo "$name" | awk '{for(i=1;i<=NF;i++){sub(".",substr(toupper($i),1,1),$i)}print}'`
-					addResult "clear-$file" "clear-$file" "\"$name\" has errors" "Clear this error warning." "icons/warning-yellow.png" "yes" "error clear \"$name\""
+					addResult "clear-$file" "clear-$file" "\"$name\" has errors" "Clear this error warning." "icons/record.png" "yes" "error clear \"$name\""
 				fi
 			fi
 		done
-		addResult "cronclearallerrors" "clear-all" "Clear all errors." "" "icons/refresh-yellow.png" "yes" "error clear all"
+		addResult "cronclearallerrors" "clear-all" "Clear all errors." "" "icons/loading.png" "yes" "error clear all"
 	fi
 # To implement a launchd script to start the agent running. Currently, not all of it is working, so it's commented out for initial release
 # elif [[ "$arg" =~ ^inst ]]; then
 # 	if [ -e "$HOME/Library/LaunchDaemons/com.alfred.cron.plist" ]; then
-# 		addResult "" "" "The launchd agent has already been installed." "" "icons/warning-yellow.png" "no" ""
+# 		addResult "" "" "The launchd agent has already been installed." "" "icons/warning.png" "no" ""
 # 	else
-# 		addResult "launchdstatus" "installlaunchd-user" "Install the launchd agent for this user" "Cron" "icons/warning-yellow.png" "yes" "installlaunchd-user"
+# 		addResult "launchdstatus" "installlaunchd-user" "Install the launchd agent for this user" "Cron" "icons/warning.png" "yes" "installlaunchd-user"
 # 	fi
 else
 	if [ "$running" = "FALSE" ]; then
-		addResult "" "" "Cron is off" "Cron status" "icons/warning-yellow.png" "yes" "status"
-		addResult "startcron" "start" "Start Cron" "Cron" "icons/play-green.png" "yes" "start"
+		addResult "" "" "Cron is off" "Cron status" "icons/warning.png" "yes" "status"
+		addResult "startcron" "start" "Start Cron" "Cron" "icons/circle_play.png" "yes" "start"
 	else
 		pid=`cat "$pidFile"`
-		addResult "" "" "Cron is running with PID: $pid" "Cron status" "icons/check-green.png" "yes" "status"
-		addResult "stopcron" "stop" "Pause Cron" "Cron" "icons/pause-red.png" "yes" "stop"
+		addResult "" "" "Cron is running with PID: $pid" "Cron status" "icons/square_ok.png" "yes" "status"
+		addResult "stopcron" "stop" "Pause Cron" "Cron" "icons/circle_pause.png" "yes" "stop"
 	fi
 	dir=`find "$errorDir/" -type f -maxdepth 1 | sed s,^./,,`
 	if [ ! -z "$dir" ]; then
-		addResult 'cronerrors' 'error' 'There are errors in some scripts.' "All scripts with errors have been disabled. Please debug them." 'icons/exclamation-red.png' 'no' 'error'
+		addResult 'cronerrors' 'error' 'There are errors in some scripts.' "All scripts with errors have been disabled. Please debug them." 'icons/warning.png' 'no' 'error'
 	fi
 	# To implement a launchd script to start the agent running. Currently, not all of it is working, so it's commented out for initial release
 	# if [ -e "$HOME/Library/LaunchAgents/com.alfred.cron.plist" ]; then
 	# 	addResult "launchdstatus" "uninstallinstalllaunchd-user" "Alfred Cron will start at user login" "Cron" "icons/check-green.png" "no" "uninstalllaunchd"
 	# else
-	# 	addResult "installlaunchd" "installlaunchd" "The launchd agent has not been installed." "Cron" "icons/warning-yellow.png" "no" "installlaunchd"
+	# 	addResult "installlaunchd" "installlaunchd" "The launchd agent has not been installed." "Cron" "icons/warning.png" "no" "installlaunchd"
 	# fi
-	addResult "addcronjob" "add" "Add a Cron Entry" "Cron" "icons/plus-green.png" "yes" "add"
-	addResult "listcronjobs" "" "List Cron Jobs" "Cron" "icons/info.png" "no" "list"
+	addResult "addcronjob" "add" "Add a Cron Entry" "Cron" "icons/circle_plus.png" "yes" "add"
+	addResult "listcronjobs" "" "List Cron Jobs" "Cron" "icons/hashtag.png" "no" "list"
 fi
 # Print the results
 getXMLResults

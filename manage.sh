@@ -148,9 +148,9 @@ then
 	conf="$conf
 	     img.type = image
 	     img.x = 472
-	     img.y = 270
+	     img.y = 400
 			 img.border = 1
-			 img.maxwidth = 128
+			 img.maxwidth = 96
 	     img.path = $icon"
 fi
 
