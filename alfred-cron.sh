@@ -55,7 +55,7 @@ setupDaemon() {
 startDaemon() {
   # Start the daemon.
   setupDaemon # Make sure the directories are there.
-  if [[ `checkDaemon` = 1 ]]; then
+  if [[ `checkDaemon` = "1" ]]; then
     echo " * \033[31;5;148mError\033[39m: $daemonName is already running."
     exit 1
   fi
@@ -69,7 +69,7 @@ startDaemon() {
 
 stopDaemon() {
   # Stop the daemon.
-  if [[ `checkDaemon` -eq 0 ]]; then
+  if [[ `checkDaemon` = "0" ]]; then
     echo " * \033[31;5;148mError\033[39m: $daemonName is not running."
     exit 1
   fi
@@ -84,7 +84,7 @@ stopDaemon() {
 
 statusDaemon() {
   # Query and return whether the daemon is running.
-  if [[ `checkDaemon` -eq 1 ]]; then
+  if [[ `checkDaemon` = "1" ]]; then
     echo " * $daemonName is running."
   else
     echo " * $daemonName isn't running."
@@ -94,7 +94,7 @@ statusDaemon() {
 
 restartDaemon() {
   # Restart the daemon.
-  if [[ ! `checkDaemon` -eq 1 ]]; then
+  if [[ ! `checkDaemon` = "1" ]]; then
     # Can't restart it if it isn't running.
     echo "$daemonName isn't running."
     exit 1
@@ -110,7 +110,7 @@ checkDaemon() {
   if [ -z "$oldPid" ]; then
     echo 0
     return 0
-  elif [[ `ps aux | grep "$oldPid" | grep -v grep` > /dev/null ]]; then
+  elif [[ `ps aux | grep "$oldPid" | grep "$daemonName" | grep -v grep` > /dev/null ]]; then
     if [ -f "$pidFile" ]; then
       if [[ `cat "$pidFile"` = "$oldPid" ]]; then
         # Daemon is running.
@@ -138,7 +138,7 @@ checkDaemon() {
 }
 
 check() {
-  if [[ `checkDaemon` -eq 1 ]]; then
+  if [[ `checkDaemon` = "1" ]]; then
     echo "TRUE"
   else
     echo "FALSE"
