@@ -32,44 +32,46 @@
 
 <p>So, if want a command to be run daily at midnight, then it might not happen. Hence, Alfred Cron uses an “interval” system. So, if you want something run once per day, then it will run the command if it hasn’t been run for a day, which makes sense for a user computer.</p>
 
-<p>How do I define a cron “job”?</p>
+<h3>How do I define a cron “job”?</h3>
 
 <p>Jobs are written as bash commands. So, if you want to write a bash script, then you can do it in the “add job” dialog box. This doesn’t mean that other types of scripts are not possible. If you want to run a python script, then your job will just run:</p>
 
 <p><code>python “/path/to/python/script.py” ‘arg’</code></p>
 
-<p>Add / Edit / Enable / Disable / Delete Jobs
-Alfred Cron uses Pashua to help add and edit jobs with a nice GUI. After adding a job, it will automatically be enabled. If you want to pause a job for a while, then just disable it. If a job returns an error code, then it will be disabled, and you’ll be sent a notification that the job had an error. You can also delete jobs. Remember, deleted jobs are unrecoverable.</p>
+<h3>Add / Edit / Enable / Disable / Delete Jobs</h3>
+<p>Alfred Cron uses Pashua to help add and edit jobs with a nice GUI. After adding a job, it will automatically be enabled. If you want to pause a job for a while, then just disable it. If a job returns an error code, then it will be disabled, and you’ll be sent a notification that the job had an error. You can also delete jobs. Remember, deleted jobs are unrecoverable.</p>
 
-<p>What sort of jobs can I create?
-Well, anything. There are two examples below, but, really, you can run anything you can script. Please share good examples of things you’ve written.</p>
+<h3>What sort of jobs can I create?</h3>
+<p>Well, anything. There are two examples below, but, really, you can run anything you can script. Please share good examples of things you’ve written.</p>
 
 <p>Also, I’ve heard that Alfred 2.3 contains external triggers for workflows, so you can run a workflow at any particular time.</p>
 
-<p>Logs
-A log file exists for you to peruse in the Alfred Cron data directory. Log files should not exceed 2mb. When a log file hits the limit, then it will be renamed to alfred-cron.log.old, and a new file will be created. Only one older log is kept.</p>
+<h3>Logs</h3>
+<p>A log file exists for you to peruse in the Alfred Cron data directory. Log files should not exceed 2mb. When a log file hits the limit, then it will be renamed to alfred-cron.log.old, and a new file will be created. Only one older log is kept.</p>
 
-<p>Running at Start Time
+<h3>Running at Start Time</h3>
 A launched plist is included with the workflow. If you choose to install it, then Alfred Cron will start running when the system boots up. Otherwise, you’ll have to start the cron daemon manually. If you do install the plist, then you’ll need to enter an administrator password.</p>
 
-<p>Alfred Bundler
-Alfred Cron users the Alfred Bundler to download and use libraries and utility apps (Pashua, Terminal Notifier). So, if you’re running the Alfred Cron workflow initially, it might take a few minutes to set itself up. Also, if you have Gatekeeper turned on, then you will be prompted to enter an Administrator password to “whitelist” the utility applications.</p>
+<h3>Alfred Bundler</h3>
+<p>Alfred Cron users the Alfred Bundler to download and use libraries and utility apps (Pashua, Terminal Notifier). So, if you’re running the Alfred Cron workflow initially, it might take a few minutes to set itself up. Also, if you have Gatekeeper turned on, then you will be prompted to enter an Administrator password to “whitelist” the utility applications.</p>
 
-<p>Tips:</p>
+<h2>Tips:</h2>
 
-<p>Bash variables are available for you. </p>
+<ul>
+<li>Bash variables are available for you.</li>
 
-<p>The cron daemon runs under your user account, not root. So, if you want to do anything that would require sudo, then you should authorize that command for sudo for your user. If you want a safe way to add entries to your sudoers file, then look into my <a href="">“sudoers” workflow</a>, which checks the syntax of the entry so as not to break your sudoers file.</p>
+<li>The cron daemon runs under your user account, not root. So, if you want to do anything that would require sudo, then you should authorize that command for sudo for your user. If you want a safe way to add entries to your sudoers file, then look into my <a href="">“sudoers” workflow</a>, which checks the syntax of the entry so as not to break your sudoers file.</li>
 
-<p>Quote all of your paths. If there is a space in the path, then things might break.</p>
+<li>Quote all of your paths. If there is a space in the path, then things might break.</li>
 
-<p>Unless you install the launchd script that accompanies the workflow, then Alfred Cron will not run at startup: you’ll have to start it manually.</p>
+<li>Unless you install the launchd script that accompanies the workflow, then Alfred Cron will not run at startup: you’ll have to start it manually.</li>
 
-<p>Debug your scripts before adding them to cron. If a script returns an error code, then the Alfred Cron daemon will disable the script and log an error. You can always check the log for output.</p>
+<li>Debug your scripts before adding them to cron. If a script returns an error code, then the Alfred Cron daemon will disable the script and log an error. You can always check the log for output.</li>
 
-<p>The daemon runs every 60 seconds (or as close to it as possible). So, setting something to run every 15 seconds is pointless. If you want the daemon to run either more or less often, then change the runInterval variable in alfred-cron.sh. Note: updates will overwrite this setting. But, honestly, 60 seconds is a sane value.</p>
+<li>The daemon runs every 60 seconds (or as close to it as possible). So, setting something to run every 15 seconds is pointless. If you want the daemon to run either more or less often, then change the runInterval variable in alfred-cron.sh. Note: updates will overwrite this setting. But, honestly, 60 seconds is a sane value.</li>
 
-<p>If you run a script that uses an internet connection to retrieve / push data, then make sure that you catch timeout errors so that they aren’t sent back to cron.</p>
+<li>If you run a script that uses an internet connection to retrieve / push data, then make sure that you catch timeout errors so that they aren’t sent back to cron.</li>
+</ul>
       </section>
       <footer>
         <p>This project is maintained by <a href="https://github.com/shawnrice">shawnrice</a></p>
@@ -77,6 +79,6 @@ Alfred Cron users the Alfred Bundler to download and use libraries and utility a
       </footer>
     </div>
     <script src="javascripts/scale.fix.js"></script>
-    
+
   </body>
 </html>
