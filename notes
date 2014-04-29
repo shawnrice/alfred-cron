@@ -1,8 +1,0 @@
-Should I install the daemon in a data directory?
-~/Library/LaunchAgents/com.user.loginscript.plist
-launchctl load ~/Library/LaunchAgents/com.user.loginscript.plist 
-launchctl start com.user.loginscript
- /var/log/system.log 
-
-// for system wide...
-/Library/LaunchAgents/
