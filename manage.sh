@@ -40,7 +40,7 @@ if [ "$1" = "edit" ]  && [ ! -z "$2" ] && [ -f "$scriptDir/$2" ]; then
 			pDefault='Seconds'
 		fi
 	fi
-	nameDefault="$2"
+	nameDefault=`echo $2 | tr '_' ' ' | awk '{for(i=1;i<=NF;i++){sub(".",substr(toupper($i),1,1),$i)}print}'`
 	commandDefault=`cat "$scriptDir/$2" | awk 1 ORS='[return]'`
 else
 	dTitle="Add Alfred Cron Job"
@@ -107,7 +107,7 @@ conf="
 # Label
 name.type = textfield
 name.label = Label
-name.default = My Job Label
+name.default = $nameDefault
 name.width = 360
 
 # Add Time
@@ -120,13 +120,17 @@ time.width = 40
 p.type = popup
 p.width = 80
 p.x = 50
-p.y = 387
+p.y = 432
 p.option = Seconds
 p.option = Minutes
 p.option = Hours
 p.option = Days
 p.option = Weeks
 p.default = $pDefault
+
+text.type = text
+text.width = 450
+text.default = Enter the shell command below that you intend to execute. Do not use tabs in this box because the script will be cut off at the first tab. If you want to indent, then use spaces.
 
 # Commands
 command.type = textbox
@@ -135,7 +139,8 @@ command.height = 300
 command.default = $commandDefault
 command.fonttype = fixed
 command.fontsize = small
-command.label = Shell Command to Execute. Call longer scripts rather than writing them out as text may be truncated.
+
+
 
 # Add a cancel button with default label
 cb.type=cancelbutton
@@ -188,16 +193,19 @@ else
 		;;
 	esac
 
-	if [ -f "$scriptDir/$name" ]; then
-		echo "Error: Script already exists."
-		exit 1
-	fi
+	# if [ -f "$scriptDir/$name" ]; then
+	# 	echo "Error: Script already exists."
+	# 	exit 1
+	# fi
 
 	# Save the script.
 	# echo "set -o errexit[return]"`trim "$command"` | \
-	echo "set -o errexit[return]$command" | \
-	 sed -e 's|^ *||' \
-	     -e 's| *$||' \
+	head='#!/bin/bash\nset -o errexit'
+	if [[ ! "$command" =~ "#!/bin/bash" ]]; then
+		command=`echo "#!/bin/bash\nset -o errexit\n$command"`
+	fi
+	echo "$command" | \
+	 sed -e 's| *$||' \
 			 -e 's|\[return\]|\'$'\n|g' > "$scriptDir/$name"
 
 	# Delete an job if the name is already in there. This error should already

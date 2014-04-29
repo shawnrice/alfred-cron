@@ -27,22 +27,23 @@ if [[ "$arg" =~ ^l ]] || [[ "$arg" =~ ^ed ]]; then
 		for f in "$scriptDir/"*
 		do
 			if [ -f "$f" ]; then
-				file=$(basename "$f" | tr '_' ' ')
-				file=`echo "$file" | awk '{for(i=1;i<=NF;i++){sub(".",substr(toupper($i),1,1),$i)}print}'`
+				file=$(basename "$f")
+				name=`echo $file | tr '_' ' '`
+				name=`echo "$name" | awk '{for(i=1;i<=NF;i++){sub(".",substr(toupper($i),1,1),$i)}print}'`
 				if [ -e "$enabledScriptDir/$file" ]; then
 					icon='icons/circle_ok.png'
 				else
 					icon='icons/circle.png'
 				fi
 				if [ ! -z "$second" ]; then
-					if [[ "$file" =~ "$second" ]]; then
-						addResult "edit-$file" "edit-$file" "Edit $file" "$second" "$icon" "yes" "edit-$file"
+					if [[ "$name" =~ "$second" ]]; then
+						addResult "edit-$file" "edit-$file" "Edit $name" "$second" "$icon" "yes" "edit-$file"
 					fi
 				else
 					if [[ `echo $icon | grep '_ok'` ]]; then
-						addResult "edit-$file" "edit-$file" "Edit $file" "Job Enabled" "$icon" "yes" "edit-$file"
+						addResult "edit-$file" "edit-$file" "Edit $name" "Job Enabled" "$icon" "yes" "edit-$file"
 					else
-						addResult "edit-$file" "edit-$file" "Edit $file" "Job Disabled" "$icon" "yes" "edit-$file"
+						addResult "edit-$file" "edit-$file" "Edit $name" "Job Disabled" "$icon" "yes" "edit-$file"
 					fi
 				fi
 			fi
@@ -50,16 +51,24 @@ if [[ "$arg" =~ ^l ]] || [[ "$arg" =~ ^ed ]]; then
 	fi
 elif [[ "$arg" =~ ^di ]]; then
 	dir=`find "$enabledScriptDir/" -type f -maxdepth 1 | sed s,^./,,`
+	# echo $dir
 	if [ -z "$dir" ]; then
 		addResult '' '' 'There are no enabled cron jobs.' '' 'icons/warning.png' 'no' ''
 	else
+		yes='false'
 		for f in "$enabledScriptDir/"*
 		do
 			file=$(basename "$f")
-			name=`echo $file | tr '_' ' '`
-			name=`echo "$name" | awk '{for(i=1;i<=NF;i++){sub(".",substr(toupper($i),1,1),$i)}print}'`
-			addResult "disable-$file" "disable-$file" "Disable \"$name\"" "" "icons/pause.png" "yes" "disable \"$name\""
+			if [ ! "$file" = "*" ]; then
+				yes='true'
+				name=`echo $file | tr '_' ' '`
+				name=`echo "$name" | awk '{for(i=1;i<=NF;i++){sub(".",substr(toupper($i),1,1),$i)}print}'`
+				addResult "disable-$file" "disable-$file" "Disable \"$name\"" "" "icons/pause.png" "yes" "disable \"$name\""
+			fi
 		done
+		if [ "$yes" = 'false' ]; then
+			addResult '' '' 'There are no enabled cron jobs.' '' 'icons/warning.png' 'no' ''
+		fi
 	fi
 elif [[ "$arg" =~ ^en ]]; then
 	count=0
@@ -92,7 +101,7 @@ elif [[ "$arg" =~ ^de ]]; then
 				file=$(basename "$f")
 					name=`echo $file | tr '_' ' '`
 					name=`echo "$name" | awk '{for(i=1;i<=NF;i++){sub(".",substr(toupper($i),1,1),$i)}print}'`
-					addResult "delete-$file" "delete-$file" "Delete \"$name\"" "" "icons/trash-dark.png" "yes" "delete \"$name\""
+					addResult "delete-$file" "delete-$file" "Delete \"$name\"" "" "icons/bin.png" "yes" "delete \"$name\""
 			fi
 		done
 	else

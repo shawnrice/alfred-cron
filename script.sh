@@ -54,9 +54,10 @@ elif [[ "$query" =~ clear ]]; then
 	fi
 elif [[ "$query" =~ delete ]]; then
 	script=${query#delete-}
+	echo "here"
 	name=`echo $script | tr '_' ' '`
 	name=`echo "$name" | awk '{for(i=1;i<=NF;i++){sub(".",substr(toupper($i),1,1),$i)}print}'`
-	applescripticon="$(echo `pwd`/icons/alert.icns | tr '/' ':' | awk '{print substr($0, 2, length($0) - 1)}')"
+	applescripticon="$(echo `pwd`/icons/warning.png | tr '/' ':' | awk '{print substr($0, 2, length($0) - 1)}')"
 	read -d '' applescript <<-"_EOF_"
 display dialog "Do you really want to delete 'JOBNAME'?" buttons {"Confirm", "Cancel"} default button 1 cancel button 2 with title "Alfred Cron" with icon file "ICONFILE"
 	_EOF_
