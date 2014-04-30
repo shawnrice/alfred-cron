@@ -35,7 +35,6 @@ fi
 if [ ! -z $(echo $tags | grep Red ) ]; then
 tag -r "Red" "$file"
 fi
-# echo $file
 done
 
 
