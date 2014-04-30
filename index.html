@@ -15,7 +15,7 @@
   <body>
     <div class="wrapper">
       <header>
-        <h1>Alfred-cron<img class='icon' src='icon.png' width='50px' /></h1>
+        <h1>Alfred Cron<img class='icon' src='icon.png' width='50px' /></h1>
         <p>A workflow that allows for a fake cron to be run and managed through Alfred 2</p>
         <p class="view"><a href="https://github.com/shawnrice/alfred-cron">View the Project on GitHub <small>shawnrice/alfred-cron</small></a></p>
         <ul>
@@ -26,31 +26,103 @@
       </header>
       <section>
 
+<h2>Alfred Cron is not a true cron</h2>
 <p>This is not a true cron in that it doesn’t run commands at a specified time. Why? Cron doesn’t make sense to have on most regular computers; for servers, it makes sense because the servers are <strong>always</strong> on. If your laptop is off, closed, or asleep, then it won’t run a cron command at the correct time. The same goes with a desktop Mac.</p>
 
 <p>So, if want a command to be run daily at midnight, then it might not happen. Hence, Alfred Cron uses an “interval” system. So, if you want something run once per day, then it will run the command if it hasn’t been run for a day, which makes sense for a user computer.</p>
-<p>Timed commands are are</p>
-<h3>How do I define a cron “job”?</h3>
+<p>Timed commands are tentatively planned for a future release, but most of the workflow needs to be rewritten to accommodate them.</p>
 
-<p>Jobs are written as bash commands. So, if you want to write a bash script, then you can do it in the “add job” dialog box. This doesn’t mean that other types of scripts are not possible. If you want to run a python script, then your job will just run:</p>
-
-<p><code>python “/path/to/python/script.py” ‘arg’</code></p>
-
-<h3>Add / Edit / Enable / Disable / Delete Jobs</h3>
+<h2>Alfred Cron in action</h2>
+<img src='https://raw.githubusercontent.com/shawnrice/alfred-cron/master/assets/cron.gif' alt='animated screenshot' />
+<p> </p>
+<h2>Add / Edit / Enable / Disable / Delete Jobs</h2>
 <p>Alfred Cron uses Pashua to help add and edit jobs with a nice GUI. After adding a job, it will automatically be enabled. If you want to pause a job for a while, then just disable it. If a job returns an error code, then it will be disabled, and you’ll be sent a notification that the job had an error. You can also delete jobs. Remember, deleted jobs are unrecoverable.</p>
 
-<h3>What sort of jobs can I create?</h3>
-<p>Well, anything. There are two examples below, but, really, you can run anything you can script. Please share good examples of things you’ve written.</p>
+<h2>How do I define a cron “job”?</h2>
 
-<p>Also, I’ve heard that Alfred 2.3 contains external triggers for workflows, so you can run a workflow at any particular time.</p>
+<p>Jobs are written as bash commands. So, you can write full scripts, or you can write simple commands to invoke other scripts. You can even invoke Alfred Workflows via the new External Trigger workflow object.</p>
+<h4>Run a python script</h4>
+<p>If you want to run a python script (this applies to any kind of script), then you just have to have <pre>python “/path/to/python/script.py” "arg"</pre> as the job.</p>
+<p>Since you can use Bash variables, you could also write something like
+  <pre>python "$HOME/Desktop/script.py" "args"</pre>
+</p>
+<h4>Bash Script</h4>
+So, if you want to write a bash script, then you can do it in the “add job” dialog box.</p>
+<p>Two example scripts are included under the "Examples" folder in the workflow directory. These might need to be tailored to your own needs. Here is one:</p>
+<pre>
+  #!/bin/bash
 
-<h3>Logs</h3>
+  # This script uses a nice little utility called "tag" that can be installed via
+  # Homebrew with 'brew install tag'; or you can find the project on Github
+  # https://github.com/jdberry/tag
+
+  # We need to set the IFS (separator character) to deal with filenames with spaces.
+  IFS=$'\n'
+
+  # Within the last week
+  # Let's color file Green
+  for file in $(find -E "$HOME/Downloads" -type f -maxdepth 1 -mtime -7 -regex '.*(png|gif|jpg|jpeg|bmp|svg|tiff|tif)$');
+  do
+    tags=`tag -l "$file" | sed 's|'"$file"'||g'`
+    if [ -z $(echo $tags | grep Green ) ]; then
+      tag -a "Green" "$file"
+    fi
+    if [ ! -z $(echo $tags | grep Red ) ]; then
+      tag -r "Red" "$file"
+    fi
+  done
+
+
+  # Older than one week but within the last month
+  # Let's remove the tags
+  for file in $(find -E "$HOME/Downloads" -type f -maxdepth 1 -mtime +7 -mtime -30 -regex '.*(png|gif|jpg|jpeg|bmp|svg|tiff|tif)$');
+  do
+    tags=`tag -l "$file" | sed 's|'"$file"'||g'`
+    if [ ! -z $(echo $tags | grep Green ) ]; then
+      tag -r "Green" "$file"
+    fi
+    if [ ! -z $(echo $tags | grep Red ) ]; then
+      tag -r "Red" "$file"
+    fi
+  done
+
+
+  # Older than one month
+  # Let's remove the old colors and move them to the "~/Pictures" folder
+  for file in $(find -E "$HOME/Downloads" -type f -maxdepth 1 -mtime +30 -regex '.*(png|gif|jpg|jpeg|bmp|svg|tiff|tif)$');
+  do
+    tags=`tag -l "$file" | sed 's|'"$file"'||g'`
+    if [ ! -z $(echo $tags | grep Green ) ]; then
+      tag -r Green "$file"
+    fi
+    if [ ! -z $(echo $tags | grep Red ) ]; then
+      tag -r Red "$file"
+    fi
+    mv "$file" "$HOME/Pictures"
+  done
+</pre>
+
+<h4>Invoking an Alfred workflow via an External Trigger</h4>
+<p>So, to run a workflow via an external trigger, you just need to run some Applescript. If the script is saved as a file, then just run
+  <pre>osascript "/path/to/script.scpt"</pre>
+</p>
+<p>If the script is short, then you can run it as a single command. This code below uses an example workflow that can be found <a href='https://github.com/shawnrice/alfred-notifier' alt='link to alfred notifier'>here</a>.</p>
+<pre>osascript -e 'tell application "Alfred 2" to run trigger "lt" in workflow "alfred.notifier.spr" with argument "This is a notification."'</pre>
+<p> </p>
+
+<h2>Job Errors</h2>
+<p>If a job throws an error, then Alfred Cron will automatically disable the job and flag a warning. A notification will appear that the script failed, and you will see an error message when you invoke Alfred Cron.</p>
+
+<h2>Logs</h2>
 <p>A log file exists for you to peruse in the Alfred Cron data directory. Log files should not exceed 2mb. When a log file hits the limit, then it will be renamed to alfred-cron.log.old, and a new file will be created. Only one older log is kept.</p>
 
-<h3>Alfred Bundler</h3>
-<p>Alfred Cron users the Alfred Bundler to download and use libraries and utility apps (Pashua, Terminal Notifier). So, if you’re running the Alfred Cron workflow initially, it might take a few minutes to set itself up. Also, if you have Gatekeeper turned on, then you will be prompted to enter an Administrator password to “whitelist” the utility applications.</p>
+<h2>Alfred Cron doesn't start on boot</h2>
+<p>Alfred Cron won't run automatically when you boot up your computer or when you login. This feature is planned for a future release.</p>
 
-<h2>Tips:</h2>
+<h2>Alfred Bundler</h2>
+<p>Alfred Cron uses the <a href='http://shawnrice.github.io/alfred-bundler/' alt='link to alfred bundler'>Alfred Bundler</a> to download and use libraries and utility apps (Pashua, Terminal Notifier). So, if you’re running the Alfred Cron workflow initially, it might take a few minutes to set itself up. Also, if you have Gatekeeper turned on, then you will be prompted to enter an Administrator password to “whitelist” the utility applications.</p>
+
+<h2>Tips</h2>
 
 <ul>
 <li>Bash variables are available for you.</li>
@@ -66,7 +138,10 @@
 <li>The daemon runs every 60 seconds (or as close to it as possible). So, setting something to run every 15 seconds is pointless. If you want the daemon to run either more or less often, then change the runInterval variable in alfred-cron.sh. Note: updates will overwrite this setting. But, honestly, 60 seconds is a sane value.</li>
 
 <li>If you run a script that uses an internet connection to retrieve / push data, then make sure that you catch timeout errors so that they aren’t sent back to cron.</li>
+<li>If Alfred Cron has been off for a while, then it will run more jobs than usual (because probably all of them will be past their set interval), so expect that.</li>
 </ul>
+<h2>License</h2>
+<p>Alfred Cron is licensed under the <a href='http://www.gnu.org/licenses/gpl.html'>GNU General Public License v3</a>. So, if anything goes wrong with your computer (or your life) because of this workflow, then then I'm not responsible. So, make sure you check and test your scripts before you add them to the cron.</p>
       </section>
       <footer>
         <p>This project is maintained by <a href="https://github.com/shawnrice">shawnrice</a></p>
