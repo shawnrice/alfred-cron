@@ -2,17 +2,18 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>Disabled</key>
-	<false/>
 	<key>Label</key>
-	<string>com.alfred.cron</string>
+	<string>Alfred Cron</string>
 	<key>ProgramArguments</key>
 	<array>
-		<string>/bin/bash</string>
-		<string>-c</string>
-		<string>REPLACE_ALFRED_CRONPATHalfred-cron.sh start</string>
+		<string>/Users/Sven/Documents/Alfred2 Workflows/alfred-cron/alfred-cron.sh</string>
+		<string>start</string>
 	</array>
 	<key>RunAtLoad</key>
 	<true/>
+	<key>StandardErrorPath</key>
+	<string>/tmp/Alfred Cron.err</string>
+	<key>StandardOutPath</key>
+	<string>/tmp/Alfred Cron.out</string>
 </dict>
 </plist>

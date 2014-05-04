@@ -7,11 +7,12 @@
 # This is an adapated version of that skeleton.
 
 # Import the path variables
-. variables
+path="$( cd "$(dirname "$0")" ; pwd -P )"
+. "$path/variables"
 
 doCommands() {
   # This is where you put all the commands for the daemon.
-  sh punchcard.sh
+  "$path/punchcard.sh"
 }
 
 ################################################################################

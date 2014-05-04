@@ -2,23 +2,31 @@
 
 . variables
 
-dir() {
+check() {
+  # Basically, if the directories or anything is missing, then we'll install
+  # the dependencies
   if [ ! -d "$1" ]; then
-    mkdir "$1"
+    if [ -f "$data/assets/setup-complete" ]; then
+      rm "$data/assets/setup-complete"
+    fi
+    ./first-run.sh
+    exit
   fi
 }
 
-dir "$cache"
-dir "$data"
-dir "$logDir"
-dir "$scriptDir"
-dir "$enabledScriptDir"
-dir "$errorDir"
-dir "$data/assets"
+check "$cache"
+check "$data"
+check "$logDir"
+check "$scriptDir"
+check "$enabledScriptDir"
+check "$errorDir"
+check "$data/assets"
 
 if [ ! -f "alfred.bundler.sh" ]; then
   curl -sL "https://raw.githubusercontent.com/shawnrice/alfred-bundler/aries/wrappers/alfred.bundler.sh" > alfred.bundler.sh
 fi
+
+# script : "tell application \"Alfred 2\" to run trigger \"com.alfred.cron\" in workflow \"alfred.cron.spr\" with argument \"test\""
 
 # Copy the daemon to the datadir
 # Copy the launchd plist to the datadir

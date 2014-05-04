@@ -1,18 +1,19 @@
 #!/bin/bash
-. variables
-. alfred.bundler.sh
+path="$( cd "$(dirname "$0")" ; pwd -P )"
+. "$path/variables"
+. "$path/alfred.bundler.sh"
 
 runCommand() {
  if [ -z "$3" ]; then
-  run="never"
+  run="has never been run"
  else
   t=`date +"%s"`
   run="$3"
   run=$((t-run))
-  run="$run seconds ago"
+  run=", which was last run $run seconds ago"
  fi
  echo "-----" > "$cache/tmpRunFile"
- echo `date +'%Y-%m-%d  %H:%M:%S'`": Running $1 (every $2 seconds) and was last run $run." >> "$cache/tmpRunFile"
+ echo `date +'%Y-%m-%d  %H:%M:%S'`": Running $1 (every $2 seconds) $run." >> "$cache/tmpRunFile"
  output=`sh "$enabledScriptDir/$1"`
  error=`echo $?`
  if [[ ! $error -eq 0 ]]; then
@@ -63,7 +64,7 @@ if [ ! -z "$registry" ]; then
      runCommand "$name" "$interval"
     elif [[ `echo $punchcard | grep "$name"` ]]; then
      last=$(echo "$punchcard" | egrep -o "$name=[[:digit:]]*" | head -n1 | tr -cd '[[:digit:]]')
-     if [[ $((last+interval)) -lt $now ]]; then
+     if [[ $((last+interval)) -lt $((now+60)) ]]; then
        runCommand "$name" "$interval" "$last"
      fi
     fi

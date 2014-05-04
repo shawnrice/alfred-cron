@@ -1,0 +1,21 @@
+# Changelog
+
+==1.2==
+* Implemented AAPI, especially for handshake protocols
+
+==1.1==
+
+* Added LaunchAgent
+* Altered all script paths
+* Added registry/punchcard maintenance
+* Broke off setup script
+* Altered initial setup to look for internet connection and throw an error
+
+* Refactored code for easier extendability
+* Added External Triggers for interaction
+* Added External Triggers for Return
+
+
+==1.0==
+
+* Initial Release

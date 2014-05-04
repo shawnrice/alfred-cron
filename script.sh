@@ -1,7 +1,8 @@
 #!/bin/bash
 
+path="$( cd "$(dirname "$0")" ; pwd -P )"
 # This is the intermediary script.
-. variables
+. "$path/variables"
 
 log() {
 	# Generic log function.
@@ -20,7 +21,7 @@ elif [ "$query" = "stop" ]; then
 	./alfred-cron.sh stop > /dev/null 2>&1
 	echo "The daemon has stopped."
 elif [ "$query" = "add" ]; then
-	sh manage.sh
+	./manage.sh
 elif [[ "$query" =~ enable ]]; then
 	script=${query#enable-}
 	ln "$scriptDir/$script" "$enabledScriptDir/$script"
@@ -37,7 +38,7 @@ elif [[ "$query" =~ disable ]]; then
 	log "*** $now: \"$name\" has been disabled."
 elif [[ "$query" =~ edit ]]; then
 	script=${query#edit-}
-	sh manage.sh "edit" "$script" "$scriptDir/$script"
+	./manage.sh "edit" "$script" "$scriptDir/$script"
 	log "*** $now: Cleared errors for \"$name.\""
 elif [[ "$query" =~ clear ]]; then
 	script=${query#clear-}
@@ -73,37 +74,29 @@ display dialog "Do you really want to delete 'JOBNAME'?" buttons {"Confirm", "Ca
 		rm "$scriptDir/$script"
 		echo "Deleted job: \"$name\""
 	fi
-# To implement a launchd script to start the agent running. Currently, not all of it is working, so it's commented out for initial release
-# elif [[ "$query" =~ ^install ]]; then
-# 	if [ ! -d "$data/assets" ]; then
-# 		mkdir "$data/assets"
-# 	fi
-# 	if [ ! -f 'assets/com.alfred.cron.plist' ]; then
-# 		echo "Cannot find launchd template in workflow directory. Aborting."
-# 		exit 1
-# 	else
-# 		me=`pwd`
-# 		if [ -f "$data/assets/com.alfred.cron.plist" ]; then
-# 			rm "$data/assets/com.alfred.cron.plist"
-# 		fi
-# 		echo $(cat 'assets/com.alfred.cron.plist' | sed 's|REPLACE_ALFRED_CRONPATH|'"$me/alfred-cron.sh"'|g') > "$data/assets/com.alfred.cron.plist"
-# 	fi
-# 		# script="chown $USER '$data/assets/com.alfred.cron.plist'"
-# 		# osascript -e "do shell script \"$script\" with administrator privileges"
-# 		ln "$data/assets/com.alfred.cron.plist" "$HOME/Library/LaunchAgents/com.alfred.cron.plist"
-# 		script="launchctl load '$HOME/Library/LaunchAgents/com.alfred.cron.plist'"
-# 		osascript -e "do shell script \"$script\" with administrator privileges"
-# elif [[ "$query" =~ ^uninstall ]]; then
-# 	if [ -e "/Library/LaunchDaemons/com.alfred.cron.plist" ]; then
-# 		script="launchctl unload '/Library/LaunchDaemons/com.alfred.cron.plist'"
-# 		osascript -e "do shell script \"$script\" with administrator privileges"
-# 		script="rm '/Library/LaunchDaemons/com.alfred.cron.plist'"
-# 		osascript -e "do shell script \"$script\" with administrator privileges"
-# 	fi
-# 	if [ -e "$HOME/Library/LaunchDaemons/com.alfred.cron.plist" ]; then
-# 		launchctl unload "$HOME/Library/LaunchDaemons/com.alfred.cron.plist"
-# 		rm "$HOME/Library/LaunchDaemons/com.alfred.cron.plist"
-# 	fi
+# To implement a launchd script to start the agent running.
+elif [[ "$query" =~ ^install ]]; then
+	if [ ! -d "$data/assets" ]; then
+		mkdir "$data/assets"
+	fi
+	if [ ! -f 'assets/com.alfred.cron.plist' ]; then
+		echo "Cannot find launchd template in workflow directory. Aborting."
+		exit 1
+	else
+		if [ -f "$data/assets/com.alfred.cron.plist" ]; then
+			rm "$data/assets/com.alfred.cron.plist"
+		fi
+		echo $(cat 'assets/com.alfred.cron.plist' | sed 's|REPLACE_ALFRED_CRONPATH|'"$path/alfred-cron.sh"'|g') > "$data/assets/com.alfred.cron.plist"
+	fi
+		ln "$data/assets/com.alfred.cron.plist" "$HOME/Library/LaunchAgents/com.alfred.cron.plist"
+		script="launchctl load '$HOME/Library/LaunchAgents/com.alfred.cron.plist'"
+		osascript -e "do shell script \"$script\" with administrator privileges"
+elif [[ "$query" =~ ^uninstall ]]; then
+	if [ -e "$HOME/Library/LaunchAgents/com.alfred.cron.plist" ]; then
+		script="launchctl unload '$HOME/Library/LaunchAgents/com.alfred.cron.plist'"
+		osascript -e "do shell script \"$script\" with administrator privileges"
+		rm "$HOME/Library/LaunchDaemons/com.alfred.cron.plist"
+	fi
 else
 	echo "Invalid command $query"
 fi

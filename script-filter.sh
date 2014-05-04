@@ -132,13 +132,13 @@ elif [[ "$arg" =~ ^er ]]; then
 		done
 		addResult "cronclearallerrors" "clear-all" "Clear all errors." "" "icons/loading$suffix" "yes" "error clear all"
 	fi
-# To implement a launchd script to start the agent running. Currently, not all of it is working, so it's commented out for initial release
-# elif [[ "$arg" =~ ^inst ]]; then
-# 	if [ -e "$HOME/Library/LaunchDaemons/com.alfred.cron.plist" ]; then
-# 		addResult "" "" "The launchd agent has already been installed." "" "icons/warning$suffix" "no" ""
-# 	else
-# 		addResult "launchdstatus" "installlaunchd-user" "Install the launchd agent for this user" "Cron" "icons/warning$suffix" "yes" "installlaunchd-user"
-# 	fi
+	# To implement a launchd script to start the agent running.
+	if [ -e "$HOME/Library/LaunchAgents/com.alfred.cron.plist" ]; then
+		addResult "launchdstatus" "uninstall" "Alfred Cron will start at user login" "Select to uninstall the launchd agent" "icons/square_ok$suffix" "yes" "uninstall"
+	else
+		addResult "install" "install" "The launchd agent has not been installed." "Install the lauchd agent to start Alfred Cron automatically" "icons/warning$suffix" "yes" "install"
+	fi
+
 else
 	if [ "$running" = "FALSE" ]; then
 		addResult "" "" "Cron is off" "Cron status" "icons/warning$suffix" "yes" "status"
@@ -152,14 +152,14 @@ else
 	if [ ! -z "$dir" ]; then
 		addResult 'cronerrors' 'error' 'There are errors in some scripts.' "All scripts with errors have been disabled. Please debug them." "icons/warning$suffix" 'no' 'error'
 	fi
-	# To implement a launchd script to start the agent running. Currently, not all of it is working, so it's commented out for initial release
-	# if [ -e "$HOME/Library/LaunchAgents/com.alfred.cron.plist" ]; then
-	# 	addResult "launchdstatus" "uninstallinstalllaunchd-user" "Alfred Cron will start at user login" "Cron" "icons/check-green$suffix" "no" "uninstalllaunchd"
-	# else
-	# 	addResult "installlaunchd" "installlaunchd" "The launchd agent has not been installed." "Cron" "icons/warning$suffix" "no" "installlaunchd"
-	# fi
 	addResult "addcronjob" "add" "Add a Cron Entry" "Cron" "icons/circle_plus$suffix" "yes" "add"
 	addResult "listcronjobs" "" "List Cron Jobs" "Cron" "icons/hashtag$suffix" "no" "list"
+	# To implement a launchd script to start the agent running.
+	if [ -e "$HOME/Library/LaunchAgents/com.alfred.cron.plist" ]; then
+		addResult "launchdstatus" "uninstall" "Alfred Cron will start at user login" "Select to uninstall the launchd agent" "icons/square_ok$suffix" "yes" "uninstall"
+	else
+		addResult "install" "install" "The launchd agent has not been installed." "Install the lauchd agent to start Alfred Cron automatically" "icons/warning$suffix" "yes" "install"
+	fi
 fi
 # Print the results
 getXMLResults
