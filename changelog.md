@@ -8,12 +8,15 @@
 * Added LaunchAgent
 * Altered all script paths
 * Added registry/punchcard maintenance
-* Broke off setup script
 * Altered initial setup to look for internet connection and throw an error
+* Broke off setup script into first-run
 
-* Refactored code for easier extendability
+* Refactored code for easier extension
 * Added External Triggers for interaction
 * Added External Triggers for Return
+* Changed Cron timing for more accuracy
+* Changed runtime checking for more accuracy
+
 
 
 ==1.0==
