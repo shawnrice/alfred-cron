@@ -6,7 +6,7 @@
 	<string>Alfred Cron</string>
 	<key>ProgramArguments</key>
 	<array>
-		<string>/Users/Sven/Documents/Alfred2 Workflows/alfred-cron/alfred-cron.sh</string>
+		<string>REPLACE_ALFRED_CRONPATH</string>
 		<string>start</string>
 	</array>
 	<key>RunAtLoad</key>
