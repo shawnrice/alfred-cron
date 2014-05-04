@@ -42,8 +42,6 @@ runCommand() {
  echo "$1=$now" >> "$data/punchcard"
 } # runCommand
 
-
-
 now=`date +'%s'`
 if [ -f "$data/registry" ]; then
  registry=`cat "$data/registry"`
