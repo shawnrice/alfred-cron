@@ -16,7 +16,8 @@
 * Added External Triggers for Return
 * Changed Cron timing for more accuracy
 * Changed runtime checking for more accuracy
-
+* Changed log phrasing
+* Added ability to open log easily from workflow
 
 
 ==1.0==

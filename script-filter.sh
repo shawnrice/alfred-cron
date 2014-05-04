@@ -138,7 +138,6 @@ elif [[ "$arg" =~ ^er ]]; then
 	else
 		addResult "install" "install" "The launchd agent has not been installed." "Install the lauchd agent to start Alfred Cron automatically" "icons/warning$suffix" "yes" "install"
 	fi
-
 else
 	if [ "$running" = "FALSE" ]; then
 		addResult "" "" "Cron is off" "Cron status" "icons/warning$suffix" "yes" "status"
@@ -161,5 +160,6 @@ else
 		addResult "install" "install" "The launchd agent has not been installed." "Install the lauchd agent to start Alfred Cron automatically" "icons/warning$suffix" "yes" "install"
 	fi
 fi
+addResult "viewlog" "log" "View Cron Log" "Open the log in your default text application" "" "yes" "log"
 # Print the results
 getXMLResults
