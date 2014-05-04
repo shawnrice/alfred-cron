@@ -97,6 +97,10 @@ elif [[ "$query" =~ ^uninstall ]]; then
 		osascript -e "do shell script \"$script\" with administrator privileges"
 		rm "$HOME/Library/LaunchDaemons/com.alfred.cron.plist"
 	fi
+elif [[ "$query" =~ ^lo ]]; then
+	if [ -e "$logFile" ]; then
+		open "$logFile"
+	fi
 else
 	echo "Invalid command $query"
 fi

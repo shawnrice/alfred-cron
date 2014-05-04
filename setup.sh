@@ -1,9 +1,11 @@
 #!/bin/sh
 
+# setup.sh checks to make sure all the necessary files are around; and, if not,
+# sets everything up with appropriate error checking.
 . variables
 
 test_connection() {
-  ping -c 1 -t 2 -q www.google.com > /dev/null 2>&1
+  ping -c 1 -t 5 -q www.google.com > /dev/null 2>&1
 
   if [ 0 -eq $? ]; then
     echo 1
@@ -76,13 +78,12 @@ else
   suffix='.png'
 fi
 
-if [ ! `test_connection` -eq 1 ]; then
-  error='echo "<?xml version='1.0'?><items><item uid='' arg='' valid='no' autocomplete=''><title>Error Setting up Alfred Cron</title><subtitle>An Internet connection is necessary to setup Alfred Cron. Please try again when you are connected.</subtitle><icon>icons/warning$suffix</icon></item></items>"'
-  sh -c "$error"
-  exit 1
-fi
-
 if [ ! -f "alfred.bundler.sh" ]; then
+  if [ ! `test_connection` -eq 1 ]; then
+    error='echo "<?xml version='1.0'?><items><item uid='' arg='' valid='no' autocomplete=''><title>Error Setting up Alfred Cron</title><subtitle>An Internet connection is necessary to setup Alfred Cron. Please try again when you are connected.</subtitle><icon>icons/warning$suffix</icon></item></items>"'
+    sh -c "$error"
+    exit 1
+  fi
   curl -sL "https://raw.githubusercontent.com/shawnrice/alfred-bundler/aries/wrappers/alfred.bundler.sh" > alfred.bundler.sh
 fi
 
@@ -100,8 +101,9 @@ check "$enabledScriptDir"
 check "$errorDir"
 check "$data/assets"
 
-
+###
 # If we've gotten here, all the necessary files are downloaded.
+###
 
 # Even though the bash library should be downloaded, and all we really need is
 # the path, we're leaving this call here so as to allow the bundler to check
