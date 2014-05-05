@@ -18,11 +18,23 @@ now=`date +'%Y-%m-%d  %H:%M:%S'`
 # Daemon Controls
 ################################################################################
 if [ "$query" = "start" ]; then
-	nohup sh alfred-cron.sh start > /dev/null 2>&1 &
-	echo "The daemon is now running."
+	launch=$(launchctl list|grep "Alfred Cron")
+	if [ ! -z "$launch" ]; then
+		launchctl start "Alfred Cron"
+		echo "The daemon is now running."
+	else
+		nohup sh alfred-cron.sh start > /dev/null 2>&1 &
+		echo "The daemon is now running."
+	fi
 elif [ "$query" = "stop" ]; then
-	./alfred-cron.sh stop > /dev/null 2>&1
-	echo "The daemon has stopped."
+	launch=$(launchctl list|grep "Alfred Cron")
+	if [ ! -z "$launch" ]; then
+		launchctl stop "Alfred Cron"
+		echo "The daemon has stopped."
+	else
+		./alfred-cron.sh stop > /dev/null 2>&1
+		echo "The daemon has stopped."
+	fi
 
 ################################################################################
 # Job Controls
@@ -113,16 +125,31 @@ elif [[ "$query" =~ ^install ]]; then
 		fi
 		echo $(cat 'assets/com.alfred.cron.plist' | sed 's|REPLACE_ALFRED_CRONPATH|'"$path/alfred-cron.sh"'|g') > "$data/assets/com.alfred.cron.plist"
 	fi
-		ln "$data/assets/com.alfred.cron.plist" "$HOME/Library/LaunchAgents/com.alfred.cron.plist"
-		script="launchctl load '$HOME/Library/LaunchAgents/com.alfred.cron.plist'"
-		osascript -e "do shell script \"$script\" with administrator privileges"
+	if [ -e "$HOME/Library/LaunchAgents/com.alfred.cron.plist" ]; then
+		rm "$HOME/Library/LaunchAgents/com.alfred.cron.plist"
+	fi
+	ln "$data/assets/com.alfred.cron.plist" "$HOME/Library/LaunchAgents/com.alfred.cron.plist"
+	launchctl load "$HOME/Library/LaunchAgents/com.alfred.cron.plist"
+	running=`./alfred-cron.sh check`
+	if [ "$running" = 'TRUE' ]; then
+		./alfred-cron.sh stop
+	fi
+	launchctl start "Alfred Cron"
 
 ##### Uninstall
 elif [[ "$query" =~ ^uninstall ]]; then
+	launch=`launchctl list|grep "Alfred Cron"`
+	running=`./alfred-cron.sh check`
+	if [ ! -z "$launch" ]; then
+		launchctl stop "Alfred Cron"
+		launchctl unload "Alfred Cron"
+	fi
 	if [ -e "$HOME/Library/LaunchAgents/com.alfred.cron.plist" ]; then
-		script="launchctl unload '$HOME/Library/LaunchAgents/com.alfred.cron.plist'"
-		osascript -e "do shell script \"$script\" with administrator privileges"
-		rm "$HOME/Library/LaunchDaemons/com.alfred.cron.plist"
+		rm "$HOME/Library/LaunchAgents/com.alfred.cron.plist"
+	fi
+	if [ "$running" = 'TRUE' ]; then
+		# Since Cron was running beforehand, we'll just start it up again.
+		nohup sh alfred-cron.sh start > /dev/null 2>&1 &
 	fi
 
 ################################################################################
