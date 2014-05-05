@@ -168,11 +168,9 @@ elif [[ "$arg" =~ ^s ]]; then
 	elif [[ "$arg" =~ ^stat ]]; then
 		if [ "$running" = "FALSE" ]; then
 			addResult "" "" "Cron is off" "Cron status" "icons/warning$suffix" "yes" "status"
-			addResult "startcron" "start" "Start Cron" "Cron" "icons/circle_play$suffix" "yes" "start"
 		else
 			pid=`cat "$pidFile"`
 			addResult "" "" "Cron is running with PID: $pid" "Cron status" "icons/square_ok$suffix" "yes" "status"
-			addResult "stopcron" "stop" "Stop Cron" "Cron" "icons/circle_stop$suffix" "yes" "stop"
 		fi
 	##### Stop
 	elif [[ "$arg" =~ ^sto ]]; then
@@ -192,11 +190,33 @@ elif [[ "$arg" =~ ^s ]]; then
 			addResult "stopcron" "stop" "Stop Cron" "Cron" "icons/circle_stop$suffix" "yes" "stop"
 		fi
 	fi
+
+################################################################################
+# Add Job
+################################################################################
 elif [[ "$arg" =~ ^a ]]; then
 	addResult "addcronjob" "add" "Add a Cron Entry" "Cron" "icons/circle_plus$suffix" "yes" "add"
+
+################################################################################
+# View Log
+################################################################################
 elif [[ "$arg" =~ ^lo ]]; then
 	addResult "viewlog" "log" "View Cron Log" "Open the log in your default text application" "" "yes" "log"
+
+################################################################################
+# Install LaunchAgent
+################################################################################
 elif [[ "$arg" =~ ^i ]]; then
+	if [ -e "$HOME/Library/LaunchAgents/com.alfred.cron.plist" ]; then
+		addResult "launchdstatus" "uninstall" "Alfred Cron will start at user login" "Select to uninstall the launchd agent" "icons/square_ok$suffix" "yes" "uninstall"
+	else
+		addResult "install" "install" "The launchd agent has not been installed." "Install the lauchd agent to start Alfred Cron automatically" "icons/warning$suffix" "yes" "install"
+	fi
+
+################################################################################
+# Uninstall LaunchAgent
+################################################################################
+elif [[ "$arg" =~ ^u ]]; then
 	if [ -e "$HOME/Library/LaunchAgents/com.alfred.cron.plist" ]; then
 		addResult "launchdstatus" "uninstall" "Alfred Cron will start at user login" "Select to uninstall the launchd agent" "icons/square_ok$suffix" "yes" "uninstall"
 	else
