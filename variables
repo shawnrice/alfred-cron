@@ -2,6 +2,7 @@
 
 # This is just a set of variables that can be reused between many scripts for
 # ease.
+path="$( cd "$(dirname "$0")" ; pwd -P )"
 
 workflowName="Alfred Cron"
 bundle="alfred.cron.spr"
@@ -29,4 +30,4 @@ enabledScriptDir="$data/scripts/enabled"
 pashuapath="$HOME/Library/Application Support/Alfred 2/Workflow Data/alfred.bundler-aries/assets/utility/Pashua/default/Pashua.app/Contents/MacOS/Pashua"
 tn="$HOME/Library/Application Support/Alfred 2/Workflow Data/alfred.bundler-aries/assets/utility/terminal-notifier/default/terminal-notifier.app/Contents/MacOS/terminal-notifier"
 
-. alfred.bundler.sh
+. "$path/alfred.bundler.sh"

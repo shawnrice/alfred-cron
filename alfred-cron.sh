@@ -57,7 +57,7 @@ startDaemon() {
   # Start the daemon.
   setupDaemon # Make sure the directories are there.
   if [[ `checkDaemon` = "1" ]]; then
-    echo " * \033[31;5;148mError\033[39m: $daemonName is already running."
+    echo " * Error: $daemonName is already running."
     exit 1
   fi
   echo " * Starting $daemonName with PID: $myPid."
@@ -71,7 +71,7 @@ startDaemon() {
 stopDaemon() {
   # Stop the daemon.
   if [[ `checkDaemon` = "0" ]]; then
-    echo " * \033[31;5;148mError\033[39m: $daemonName is not running."
+    echo " * Error: $daemonName is not running."
     exit 1
   fi
   echo " * Stopping $daemonName"
@@ -205,7 +205,7 @@ case "$1" in
   check
   ;;
   *)
-  echo "\033[31;5;148mError\033[39m: usage $0 { start | stop | restart | status }"
+  echo "Error: usage $0 { start | stop | restart | status }"
   exit 1
 esac
 
