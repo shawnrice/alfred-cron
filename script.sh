@@ -132,9 +132,9 @@ elif [[ "$query" =~ ^install ]]; then
 		fi
 		echo $(cat 'assets/com.alfred.cron.plist' | sed 's|REPLACE_ALFRED_CRONPATH|'"$path/alfred-cron.sh"'|g') > "$data/assets/com.alfred.cron.plist"
 	fi
-	running=`$path/alfred-cron.sh check`
+	running=`"$path/alfred-cron.sh" check`
 	if [ "$running" = 'TRUE' ]; then
-		"$path/alfred-cron.sh stop > /dev/null 2>&1 &"
+		"$path/alfred-cron.sh stop" > /dev/null 2>&1 &
 	fi
 	ln "$data/assets/com.alfred.cron.plist" "$HOME/Library/LaunchAgents/com.alfred.cron.plist"
 	launchctl load "$HOME/Library/LaunchAgents/com.alfred.cron.plist"
