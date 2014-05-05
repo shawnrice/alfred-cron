@@ -158,7 +158,7 @@ elif [[ "$query" =~ ^uninstall ]]; then
 
 elif [[ "$query" =~ ^lo ]]; then
 	if [ -e "$logFile" ]; then
-		open "$logFile"
+		qlmanage -p "$logFile" > /dev/null 2>&1 &
 	fi
 else
 	echo "Invalid command $query"
