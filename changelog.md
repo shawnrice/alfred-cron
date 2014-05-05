@@ -1,8 +1,5 @@
 # Changelog
 
-==1.2==
-* Implemented AAPI, especially for handshake protocols
-
 ==1.1==
 
 * Added LaunchAgent
