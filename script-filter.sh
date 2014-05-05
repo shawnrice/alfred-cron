@@ -1,31 +1,34 @@
-# if [ ! -f "alfred.bundler.sh" ]; then
-# 	echo "Alfred Cron needs to set itself up. Wait just a moment and try again."
-# 	sh setup.sh setup > /dev/null 2>&1 &
-# 	exit 0
-# fi
+#!/bin/bash
 
 . variables
 . setup.sh
 . "$BashWorkflowHandler"
 ./SetupIconsForTheme
 
-running=`sh alfred-cron.sh check`
+running=`./alfred-cron.sh check`
 
+# For the Icons
 if [ -e 'icon-dark.png' ]; then
 	suffix='-light.png'
 else
 	suffix='.png'
 fi
+
+# Test to see if there is an argument.
 if [ ! -z "$1" ]; then
 	arg="$1"
 fi
 
+# Split the argument
 if [[ "$arg" =~ " " ]]; then
 	second=`echo "$arg" | awk '{split($0,array," ")} END{print array[2]}'`
 	arg=`echo "$arg" | awk '{split($0,array," ")} END{print array[1]}'`
 fi
 
-if [[ "$arg" =~ ^l ]] || [[ "$arg" =~ ^ed ]]; then
+################################################################################
+# List and Edit are treated the same
+################################################################################
+if [[ "$arg" =~ ^li ]] || [[ "$arg" =~ ^ed ]]; then
 	dir=`find "$scriptDir/" -type f -maxdepth 1 | sed s,^./,,`
 	if [ -z "$dir" ]; then
 		addResult '' '' 'No cron jobs have been defined.' "$count" "icons/warning$suffix" 'no' ''
@@ -55,6 +58,10 @@ if [[ "$arg" =~ ^l ]] || [[ "$arg" =~ ^ed ]]; then
 			fi
 		done
 	fi
+
+################################################################################
+# Disable Job
+################################################################################
 elif [[ "$arg" =~ ^di ]]; then
 	dir=`find "$enabledScriptDir/" -type f -maxdepth 1 | sed s,^./,,`
 	# echo $dir
@@ -76,6 +83,10 @@ elif [[ "$arg" =~ ^di ]]; then
 			addResult '' '' 'There are no enabled cron jobs.' '' "icons/warning$suffix" 'no' ''
 		fi
 	fi
+
+################################################################################
+# Enable Job
+################################################################################
 elif [[ "$arg" =~ ^en ]]; then
 	count=0
 	dir=`find "$scriptDir/" -type f -maxdepth 1 | sed s,^./,,`
@@ -98,6 +109,10 @@ elif [[ "$arg" =~ ^en ]]; then
 	else
 		addResult '' '' 'No cron jobs have been defined.' "" "icons/warning$suffix" 'no' ''
 	fi
+
+################################################################################
+# Delete Job
+################################################################################
 elif [[ "$arg" =~ ^de ]]; then
 	dir=`find "$scriptDir/" -type f -maxdepth 1 | sed s,^./,,`
 	if [ ! -z "$dir" ]; then
@@ -113,6 +128,10 @@ elif [[ "$arg" =~ ^de ]]; then
 	else
 		addResult '' '' 'No cron jobs have been defined.' "" "icons/warning$suffix" 'no' ''
 	fi
+
+################################################################################
+# View Errors
+################################################################################
 elif [[ "$arg" =~ ^er ]]; then
 	dir=`find "$errorDir/" -type f -maxdepth 1 | sed s,^./,,`
 	if [ -z "$dir" ]; then
@@ -132,12 +151,60 @@ elif [[ "$arg" =~ ^er ]]; then
 		done
 		addResult "cronclearallerrors" "clear-all" "Clear all errors." "" "icons/loading$suffix" "yes" "error clear all"
 	fi
-	# To implement a launchd script to start the agent running.
+
+################################################################################
+# Start / Stop / Status
+################################################################################
+elif [[ "$arg" =~ ^s ]]; then
+	##### Start
+	if [[ "$arg" =~ ^star ]]; then
+		if [ "$running" = "FALSE" ]; then
+			addResult "startcron" "start" "Start Cron" "Cron" "icons/circle_play$suffix" "yes" "start"
+		else
+			pid=`cat "$pidFile"`
+			addResult "" "" "Cron is running with PID: $pid" "Cron status" "icons/square_ok$suffix" "yes" "status"
+		fi
+	##### Status
+	elif [[ "$arg" =~ ^stat ]]; then
+		if [ "$running" = "FALSE" ]; then
+			addResult "" "" "Cron is off" "Cron status" "icons/warning$suffix" "yes" "status"
+			addResult "startcron" "start" "Start Cron" "Cron" "icons/circle_play$suffix" "yes" "start"
+		else
+			pid=`cat "$pidFile"`
+			addResult "" "" "Cron is running with PID: $pid" "Cron status" "icons/square_ok$suffix" "yes" "status"
+			addResult "stopcron" "stop" "Stop Cron" "Cron" "icons/circle_stop$suffix" "yes" "stop"
+		fi
+	##### Stop
+	elif [[ "$arg" =~ ^sto ]]; then
+		if [ "$running" = "FALSE" ]; then
+			addResult "" "" "Cron is off" "Cron status" "icons/warning$suffix" "yes" "status"
+		else
+			addResult "stopcron" "stop" "Stop Cron" "Cron" "icons/circle_stop$suffix" "yes" "stop"
+		fi
+	##### Start / Stop / Status
+	else
+		if [ "$running" = "FALSE" ]; then
+			addResult "" "" "Cron is off" "Cron status" "icons/warning$suffix" "yes" "status"
+			addResult "startcron" "start" "Start Cron" "Cron" "icons/circle_play$suffix" "yes" "start"
+		else
+			pid=`cat "$pidFile"`
+			addResult "" "" "Cron is running with PID: $pid" "Cron status" "icons/square_ok$suffix" "yes" "status"
+			addResult "stopcron" "stop" "Stop Cron" "Cron" "icons/circle_stop$suffix" "yes" "stop"
+		fi
+	fi
+elif [[ "$arg" =~ ^a ]]; then
+	addResult "addcronjob" "add" "Add a Cron Entry" "Cron" "icons/circle_plus$suffix" "yes" "add"
+elif [[ "$arg" =~ ^lo ]]; then
+	addResult "viewlog" "log" "View Cron Log" "Open the log in your default text application" "" "yes" "log"
+elif [[ "$arg" =~ ^i ]]; then
 	if [ -e "$HOME/Library/LaunchAgents/com.alfred.cron.plist" ]; then
 		addResult "launchdstatus" "uninstall" "Alfred Cron will start at user login" "Select to uninstall the launchd agent" "icons/square_ok$suffix" "yes" "uninstall"
 	else
 		addResult "install" "install" "The launchd agent has not been installed." "Install the lauchd agent to start Alfred Cron automatically" "icons/warning$suffix" "yes" "install"
 	fi
+################################################################################
+# No Argument / Unrecognized One
+################################################################################
 else
 	if [ "$running" = "FALSE" ]; then
 		addResult "" "" "Cron is off" "Cron status" "icons/warning$suffix" "yes" "status"
@@ -159,7 +226,8 @@ else
 	else
 		addResult "install" "install" "The launchd agent has not been installed." "Install the lauchd agent to start Alfred Cron automatically" "icons/warning$suffix" "yes" "install"
 	fi
+	addResult "viewlog" "log" "View Cron Log" "Open the log in your default text application" "" "yes" "log"
 fi
-addResult "viewlog" "log" "View Cron Log" "Open the log in your default text application" "" "yes" "log"
+
 # Print the results
 getXMLResults
