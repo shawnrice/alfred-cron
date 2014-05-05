@@ -3,6 +3,8 @@
 # This script is run in the background, and nothing is passed back to Alfred,
 # so all output will be available to a debugger, at best.
 
+path="$( cd "$(dirname "$0")" ; pwd -P )"
+
 test_connection() {
   ping -c 1 -t 2 -q www.google.com > /dev/null 2>&1
 
@@ -19,7 +21,7 @@ dir() {
   fi
 }
 
-. variables
+. "$path/variables"
 
 # First, let's make our directories if not there.
 dir "$cache"
@@ -37,7 +39,7 @@ if [ ! `test_connection` -eq 1 ]; then
 fi
 
 # Okay, we have an internet connection, so we'll start this sucker up.
-./check-setup.sh &> /dev/null
+"$path/check-setup.sh &> /dev/null"
 tmpPID=`echo $$`
 
 # Third, let's download the bundler wrapper if it isn't there.

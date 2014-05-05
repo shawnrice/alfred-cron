@@ -3,7 +3,10 @@
 # http://sveinbjorn.org/files/manpages/PlatypusDocumentation.html
 # Current limitation with Pashua implementation: for some reason, it seems to
 # be cutting longer scripts down when entered into the command box.
-. variables
+
+path="$( cd "$(dirname "$0")" ; pwd -P )"
+
+. "$path/variables"
 
 if [ "$1" = "edit" ]  && [ ! -z "$2" ] && [ -f "$scriptDir/$2" ]; then
 	timeDefault="120"

@@ -18,6 +18,7 @@
 * Made arguments more granular
 * Added External Trigger for adding cron job
 * Altered daemon control to give precedence to launchctl
+* Fixed infinite loop on startup
 
 ==1.0==
 

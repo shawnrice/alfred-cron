@@ -1,11 +1,13 @@
 #!/bin/bash
 
-. variables
-. setup.sh
-. "$BashWorkflowHandler"
-./SetupIconsForTheme
+path="$( cd "$(dirname "$0")" ; pwd -P )"
 
-running=`./alfred-cron.sh check`
+. "$path/variables"
+. "$path/setup.sh"
+. "$BashWorkflowHandler"
+"$path/SetupIconsForTheme"
+
+running=`"$path/alfred-cron.sh" check`
 
 # For the Icons
 if [ -e 'icon-dark.png' ]; then
@@ -208,7 +210,12 @@ elif [[ "$arg" =~ ^lo ]]; then
 ################################################################################
 elif [[ "$arg" =~ ^i ]]; then
 	if [ -e "$HOME/Library/LaunchAgents/com.alfred.cron.plist" ]; then
-		addResult "launchdstatus" "uninstall" "Alfred Cron will start at user login" "Select to uninstall the launchd agent" "icons/square_ok$suffix" "yes" "uninstall"
+		launch=$(launchctl list|grep "Alfred Cron")
+		if [ -z "$launch" ]; then
+			addResult "install" "install" "The launchd agent has not been installed." "Install the lauchd agent to start Alfred Cron automatically" "icons/warning$suffix" "yes" "install"
+		else
+			addResult "launchdstatus" "uninstall" "Alfred Cron will start at user login" "Select to uninstall the launchd agent" "icons/square_ok$suffix" "yes" "uninstall"
+		fi
 	else
 		addResult "install" "install" "The launchd agent has not been installed." "Install the lauchd agent to start Alfred Cron automatically" "icons/warning$suffix" "yes" "install"
 	fi
@@ -218,7 +225,12 @@ elif [[ "$arg" =~ ^i ]]; then
 ################################################################################
 elif [[ "$arg" =~ ^u ]]; then
 	if [ -e "$HOME/Library/LaunchAgents/com.alfred.cron.plist" ]; then
-		addResult "launchdstatus" "uninstall" "Alfred Cron will start at user login" "Select to uninstall the launchd agent" "icons/square_ok$suffix" "yes" "uninstall"
+		launch=$(launchctl list|grep "Alfred Cron")
+		if [ ! -z "$launch" ]; then
+			addResult "launchdstatus" "uninstall" "Alfred Cron will start at user login" "Select to uninstall the launchd agent" "icons/square_ok$suffix" "yes" "uninstall"
+		else
+			addResult "install" "install" "The launchd agent has not been installed." "Install the lauchd agent to start Alfred Cron automatically" "icons/warning$suffix" "yes" "install"
+		fi
 	else
 		addResult "install" "install" "The launchd agent has not been installed." "Install the lauchd agent to start Alfred Cron automatically" "icons/warning$suffix" "yes" "install"
 	fi
@@ -242,7 +254,12 @@ else
 	addResult "listcronjobs" "" "List Cron Jobs" "Cron" "icons/hashtag$suffix" "no" "list"
 	# To implement a launchd script to start the agent running.
 	if [ -e "$HOME/Library/LaunchAgents/com.alfred.cron.plist" ]; then
-		addResult "launchdstatus" "uninstall" "Alfred Cron will start at user login" "Select to uninstall the launchd agent" "icons/square_ok$suffix" "yes" "uninstall"
+		launch=$(launchctl list|grep "Alfred Cron")
+		if [ ! -z "$launch" ]; then
+			addResult "launchdstatus" "uninstall" "Alfred Cron will start at user login" "Select to uninstall the launchd agent" "icons/square_ok$suffix" "yes" "uninstall"
+		else
+			addResult "install" "install" "The launchd agent has not been installed." "Install the lauchd agent to start Alfred Cron automatically" "icons/warning$suffix" "yes" "install"
+		fi
 	else
 		addResult "install" "install" "The launchd agent has not been installed." "Install the lauchd agent to start Alfred Cron automatically" "icons/warning$suffix" "yes" "install"
 	fi

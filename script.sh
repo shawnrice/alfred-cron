@@ -23,7 +23,7 @@ if [ "$query" = "start" ]; then
 		launchctl start "Alfred Cron"
 		echo "The daemon is now running."
 	else
-		nohup sh alfred-cron.sh start > /dev/null 2>&1 &
+		nohup "$path/alfred-cron.sh" start > /dev/null 2>&1 &
 		echo "The daemon is now running."
 	fi
 elif [ "$query" = "stop" ]; then
@@ -32,7 +32,7 @@ elif [ "$query" = "stop" ]; then
 		launchctl stop "Alfred Cron"
 		echo "The daemon has stopped."
 	else
-		./alfred-cron.sh stop > /dev/null 2>&1
+		"$path/alfred-cron.sh stop > /dev/null 2>&1"
 		echo "The daemon has stopped."
 	fi
 
@@ -42,7 +42,7 @@ elif [ "$query" = "stop" ]; then
 
 ##### Add
 elif [ "$query" = "add" ]; then
-	./manage.sh
+	"$path/manage.sh"
 
 ##### Enable
 elif [[ "$query" =~ enable ]]; then
@@ -65,7 +65,7 @@ elif [[ "$query" =~ disable ]]; then
 ##### Edit
 elif [[ "$query" =~ edit ]]; then
 	script=${query#edit-}
-	./manage.sh "edit" "$script" "$scriptDir/$script"
+	"$path/manage.sh 'edit' '$script' '$scriptDir/$script'"
 
 ##### Delete
 elif [[ "$query" =~ delete ]]; then
@@ -116,6 +116,9 @@ elif [[ "$query" =~ ^install ]]; then
 	if [ ! -d "$data/assets" ]; then
 		mkdir "$data/assets"
 	fi
+	if [ -e "$HOME/Library/LaunchAgents/com.alfred.cron.plist" ]; then
+		rm "$HOME/Library/LaunchAgents/com.alfred.cron.plist"
+	fi
 	if [ ! -f 'assets/com.alfred.cron.plist' ]; then
 		echo "Cannot find launchd template in workflow directory. Aborting."
 		exit 1
@@ -125,21 +128,19 @@ elif [[ "$query" =~ ^install ]]; then
 		fi
 		echo $(cat 'assets/com.alfred.cron.plist' | sed 's|REPLACE_ALFRED_CRONPATH|'"$path/alfred-cron.sh"'|g') > "$data/assets/com.alfred.cron.plist"
 	fi
-	if [ -e "$HOME/Library/LaunchAgents/com.alfred.cron.plist" ]; then
-		rm "$HOME/Library/LaunchAgents/com.alfred.cron.plist"
+	running=`$path/alfred-cron.sh check`
+	if [ "$running" = 'TRUE' ]; then
+		"$path/alfred-cron.sh stop > /dev/null 2>&1 &"
 	fi
 	ln "$data/assets/com.alfred.cron.plist" "$HOME/Library/LaunchAgents/com.alfred.cron.plist"
 	launchctl load "$HOME/Library/LaunchAgents/com.alfred.cron.plist"
-	running=`./alfred-cron.sh check`
-	if [ "$running" = 'TRUE' ]; then
-		./alfred-cron.sh stop > /dev/null 2>&1 &
-	fi
 	launchctl start "Alfred Cron"
+	echo "Alfred Cron is running and will now start at login."
 
 ##### Uninstall
 elif [[ "$query" =~ ^uninstall ]]; then
 	launch=`launchctl list|grep "Alfred Cron"`
-	running=`./alfred-cron.sh check`
+	running=`"$path/alfred-cron.sh" check`
 	if [ ! -z "$launch" ]; then
 		launchctl stop "Alfred Cron"
 		launchctl unload "$HOME/Library/LaunchAgents/com.alfred.cron.plist"
@@ -147,9 +148,10 @@ elif [[ "$query" =~ ^uninstall ]]; then
 	if [ -e "$HOME/Library/LaunchAgents/com.alfred.cron.plist" ]; then
 		rm "$HOME/Library/LaunchAgents/com.alfred.cron.plist"
 	fi
+	echo "Alfred Cron will no longer start at login."
 	if [ "$running" = 'TRUE' ]; then
 		# Since Cron was running beforehand, we'll just start it up again.
-		nohup sh alfred-cron.sh start > /dev/null 2>&1 &
+		nohup "$path/alfred-cron.sh" start > /dev/null 2>&1 &
 	fi
 
 ################################################################################

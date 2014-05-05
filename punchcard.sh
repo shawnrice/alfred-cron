@@ -13,7 +13,7 @@ runCommand() {
   run=", which was last run $run seconds ago"
  fi
  echo "-----" > "$cache/tmpRunFile"
- echo `date +'%Y-%m-%d  %H:%M:%S'`": Running $1 (every $2 seconds)$run." >> "$cache/tmpRunFile"
+ echo `date +'%Y-%m-%d  %H:%M:%S'`": Running $1 (every $2 seconds) $run." >> "$cache/tmpRunFile"
  output=`sh "$enabledScriptDir/$1"`
  error=`echo $?`
  if [[ ! $error -eq 0 ]]; then
@@ -41,6 +41,8 @@ runCommand() {
  fi
  echo "$1=$now" >> "$data/punchcard"
 } # runCommand
+
+
 
 now=`date +'%s'`
 if [ -f "$data/registry" ]; then

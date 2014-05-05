@@ -2,7 +2,10 @@
 
 # setup.sh checks to make sure all the necessary files are around; and, if not,
 # sets everything up with appropriate error checking.
-. variables
+
+path="$( cd "$(dirname "$0")" ; pwd -P )"
+
+. "$path/variables"
 
 test_connection() {
   ping -c 1 -t 5 -q www.google.com > /dev/null 2>&1
@@ -22,7 +25,7 @@ check() {
     if [ -f "$data/assets/setup-complete" ]; then
       rm "$data/assets/setup-complete"
     fi
-    ./first-run.sh > /dev/null 2>&1
+    "$path/first-run.sh > /dev/null 2>&1"
     exit
   fi
 }
@@ -39,7 +42,7 @@ check_bundler() {
           if [ -f "$data/assets/setup-complete" ]; then
             rm "$data/assets/setup-complete"
           fi
-          ./first-run.sh > /dev/null 2>&1
+          "$path/first-run.sh > /dev/null 2>&1"
           exit
         fi
       else
@@ -48,7 +51,7 @@ check_bundler() {
         if [ -f "$data/assets/setup-complete" ]; then
           rm "$data/assets/setup-complete"
         fi
-        ./first-run.sh > /dev/null 2>&1
+        "$path/first-run.sh > /dev/null 2>&1"
         exit
       fi
     else
@@ -57,7 +60,7 @@ check_bundler() {
       if [ -f "$data/assets/setup-complete" ]; then
         rm "$data/assets/setup-complete"
       fi
-      ./first-run.sh > /dev/null 2>&1
+      "$path/first-run.sh > /dev/null 2>&1"
       exit
     fi
   else
@@ -66,7 +69,7 @@ check_bundler() {
     if [ -f "$data/assets/setup-complete" ]; then
       rm "$data/assets/setup-complete"
     fi
-    ./first-run.sh > /dev/null 2>&1
+    "$path/first-run.sh > /dev/null 2>&1"
     exit
   fi
 }
