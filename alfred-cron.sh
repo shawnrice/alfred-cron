@@ -76,10 +76,17 @@ stopDaemon() {
   fi
   echo " * Stopping $daemonName"
   log '*** '`date +"%Y-%m-%d  %H:%M:%S"`": $daemonName stopped."
-
-  if [[ ! -z `cat "$pidFile"` ]]; then
-    kill -9 `cat "$pidFile"` &> /dev/null
-    rm "$pidFile"
+  launch=$(launchctl list|grep "Alfred Cron")
+  if [ ! -z "$launch" ]; then
+    launchctl stop "Alfred Cron"
+    echo "The daemon has stopped."
+    running=`"$path/alfred-cron.sh" check`
+    if [ "$running" != "False" ]; then
+      if [[ ! -z `cat "$pidFile"` ]]; then
+        kill -9 `cat "$pidFile"` &> /dev/null
+        rm "$pidFile"
+      fi
+    fi
   fi
 }
 
@@ -93,7 +100,7 @@ statusDaemon() {
   exit 0
 }
 
-restartDaemon() {
+restartfDaemon() {
   # Restart the daemon.
   if [[ ! `checkDaemon` = "1" ]]; then
     # Can't restart it if it isn't running.
