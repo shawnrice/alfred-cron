@@ -132,7 +132,7 @@ elif [[ "$query" =~ ^install ]]; then
 	launchctl load "$HOME/Library/LaunchAgents/com.alfred.cron.plist"
 	running=`./alfred-cron.sh check`
 	if [ "$running" = 'TRUE' ]; then
-		./alfred-cron.sh stop
+		./alfred-cron.sh stop > /dev/null 2>&1 &
 	fi
 	launchctl start "Alfred Cron"
 
@@ -142,7 +142,7 @@ elif [[ "$query" =~ ^uninstall ]]; then
 	running=`./alfred-cron.sh check`
 	if [ ! -z "$launch" ]; then
 		launchctl stop "Alfred Cron"
-		launchctl unload "Alfred Cron"
+		launchctl unload "$HOME/Library/LaunchAgents/com.alfred.cron.plist"
 	fi
 	if [ -e "$HOME/Library/LaunchAgents/com.alfred.cron.plist" ]; then
 		rm "$HOME/Library/LaunchAgents/com.alfred.cron.plist"
@@ -159,6 +159,7 @@ elif [[ "$query" =~ ^uninstall ]]; then
 elif [[ "$query" =~ ^lo ]]; then
 	if [ -e "$logFile" ]; then
 		qlmanage -p "$logFile" > /dev/null 2>&1 &
+		# open "$logFile"
 	fi
 else
 	echo "Invalid command $query"
