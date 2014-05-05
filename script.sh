@@ -31,8 +31,12 @@ elif [ "$query" = "stop" ]; then
 	if [ ! -z "$launch" ]; then
 		launchctl stop "Alfred Cron"
 		echo "The daemon has stopped."
+		running=`"$path/alfred-cron.sh" check`
+		if [ "$running" != "False" ]; then
+			"$path/alfred-cron.sh" stop > /dev/null 2>&1
+		fi
 	else
-		"$path/alfred-cron.sh stop > /dev/null 2>&1"
+		"$path/alfred-cron.sh" stop > /dev/null 2>&1
 		echo "The daemon has stopped."
 	fi
 

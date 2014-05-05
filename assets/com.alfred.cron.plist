@@ -6,6 +6,7 @@
 	<string>Alfred Cron</string>
 	<key>ProgramArguments</key>
 	<array>
+		<string>/bin/bash</string>
 		<string>REPLACE_ALFRED_CRONPATH</string>
 		<string>start</string>
 	</array>
