@@ -1,9 +1,11 @@
 #!/bin/bash
 
+### Start Script
 path="$( cd "$(dirname "$0")" ; pwd -P )"
 
-. "$path/variables"
 . "$path/setup.sh"
+. "$path/variables"
+. "$path/alfred.bundler.sh"
 . "$BashWorkflowHandler"
 "$path/SetupIconsForTheme"
 

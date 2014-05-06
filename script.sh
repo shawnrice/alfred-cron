@@ -3,6 +3,7 @@
 path="$( cd "$(dirname "$0")" ; pwd -P )"
 # This is the intermediary script.
 . "$path/variables"
+. "$path/alfred.bundler.sh"
 
 log() {
 	# Generic log function.
@@ -32,7 +33,7 @@ elif [ "$query" = "stop" ]; then
 		launchctl stop "Alfred Cron"
 		echo "The daemon has stopped."
 		running=`"$path/alfred-cron.sh" check`
-		if [ "$running" != "False" ]; then
+		if [ "$running" != "FALSE" ]; then
 			"$path/alfred-cron.sh" stop > /dev/null 2>&1
 		fi
 	else

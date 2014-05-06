@@ -8,12 +8,17 @@ path="$( cd "$(dirname "$0")" ; pwd -P )"
 . "$path/variables"
 
 test_connection() {
-  ping -c 1 -t 5 -q www.google.com > /dev/null 2>&1
-
+  ping -c 1 -t 3 -q www.google.com > /dev/null 2>&1
   if [ 0 -eq $? ]; then
-    echo 1
+    echo "TRUE"
   else
-    echo 0
+    # Fallback in case ping is weird.
+    tmp=`curl -sL http://www.google.com`
+    if [ 0 -eq $? ]; then
+      echo "TRUE"
+    else
+      echo "FALSE"
+    fi
   fi
 }
 
@@ -25,15 +30,19 @@ check() {
     if [ -f "$data/assets/setup-complete" ]; then
       rm "$data/assets/setup-complete"
     fi
-    "$path/first-run.sh > /dev/null 2>&1"
+    nohup "$path/first-run.sh" > /dev/null 2>&1 &
     exit
   fi
 }
 
 check_bundler() {
   bundler="$HOME/Library/Application Support/Alfred 2/Workflow Data/alfred.bundler-aries"
-  please_wait='echo "<?xml version='1.0'?><items><item uid='' arg='' valid='no' autocomplete=''><title>Setting up cron...</title><subtitle>Downloading dependencies. Internet connection required.</subtitle><icon>icon.png</icon></item></items>"'
+  read -d '' please_wait <<-"_EOF_"
+echo "<?xml version='1.0'?><items><item uid='' arg='' valid='no' autocomplete=''><title>Setting up cron...</title><subtitle>Downloading dependencies. Internet connection required.</subtitle><icon>icon.png</icon></item></items>"
+_EOF_
+
   if [ -d "$bundler" ]; then
+
     if [ -f "$bundler/assets/bash/BashWorkflowHandler/default/workflowHandler.sh" ]; then
       if [ -e "$bundler/assets/utility/Pashua/default/Pashua.app" ]; then
         if [ ! -e "$bundler/assets/utility/Terminal-Notifier/default/terminal-notifier.app" ]; then
@@ -42,16 +51,17 @@ check_bundler() {
           if [ -f "$data/assets/setup-complete" ]; then
             rm "$data/assets/setup-complete"
           fi
-          "$path/first-run.sh > /dev/null 2>&1"
+            nohup "$path/first-run.sh" > /dev/null 2>&1 &
           exit
         fi
       else
         sh -c "$please_wait"
+
         # Something is wrong. Let's run through the setup.
         if [ -f "$data/assets/setup-complete" ]; then
           rm "$data/assets/setup-complete"
         fi
-        "$path/first-run.sh > /dev/null 2>&1"
+          nohup "$path/first-run.sh" > /dev/null 2>&1 &
         exit
       fi
     else
@@ -60,8 +70,8 @@ check_bundler() {
       if [ -f "$data/assets/setup-complete" ]; then
         rm "$data/assets/setup-complete"
       fi
-      "$path/first-run.sh > /dev/null 2>&1"
-      exit
+      nohup "$path/first-run.sh" > /dev/null 2>&1 &
+      exit 0
     fi
   else
     sh -c "$please_wait"
@@ -69,7 +79,7 @@ check_bundler() {
     if [ -f "$data/assets/setup-complete" ]; then
       rm "$data/assets/setup-complete"
     fi
-    "$path/first-run.sh > /dev/null 2>&1"
+    nohup "$path/first-run.sh" > /dev/null 2>&1 &
     exit
   fi
 }
@@ -82,15 +92,15 @@ else
 fi
 
 if [ ! -f "alfred.bundler.sh" ]; then
-  if [ ! `test_connection` -eq 1 ]; then
-    error='echo "<?xml version='1.0'?><items><item uid='' arg='' valid='no' autocomplete=''><title>Error Setting up Alfred Cron</title><subtitle>An Internet connection is necessary to setup Alfred Cron. Please try again when you are connected.</subtitle><icon>icons/warning$suffix</icon></item></items>"'
+  if [ `test_connection` = 'FALSE' ]; then
+    read -d '' error <<-"_EOF_"
+echo "<?xml version='1.0'?><items><item uid='' arg='' valid='no' autocomplete=''><title>Error Setting up Alfred Cron</title><subtitle>An Internet connection is necessary to setup Alfred Cron. Please try again when you are connected.</subtitle><icon>icons/warning$suffix</icon></item></items>"
+_EOF_
     sh -c "$error"
-    exit 1
+    exit 0
   fi
   curl -sL "https://raw.githubusercontent.com/shawnrice/alfred-bundler/aries/wrappers/alfred.bundler.sh" > alfred.bundler.sh
 fi
-
-. alfred.bundler.sh
 
 # Check to see if the bundler is there.
 check_bundler
@@ -107,6 +117,8 @@ check "$data/assets"
 ###
 # If we've gotten here, all the necessary files are downloaded.
 ###
+
+. "$path/alfred.bundler.sh"
 
 # Even though the bash library should be downloaded, and all we really need is
 # the path, we're leaving this call here so as to allow the bundler to check

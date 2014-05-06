@@ -2,16 +2,20 @@
 
 # This script is run in the background, and nothing is passed back to Alfred,
 # so all output will be available to a debugger, at best.
-
 path="$( cd "$(dirname "$0")" ; pwd -P )"
 
 test_connection() {
-  ping -c 1 -t 2 -q www.google.com > /dev/null 2>&1
-
+  ping -c 1 -t 3 -q www.google.com > /dev/null 2>&1
   if [ 0 -eq $? ]; then
-    echo 1
+    echo "TRUE"
   else
-    echo 0
+    # Fallback in case ping is weird.
+    tmp=`curl -sL http://www.google.com`
+    if [ 0 -eq $? ]; then
+      echo "TRUE"
+    else
+      echo "FALSE"
+    fi
   fi
 }
 
@@ -33,13 +37,24 @@ dir "$errorDir"
 dir "$data/assets"
 
 # Second, let's check the internet connection.
-if [ ! `test_connection` -eq 1 ]; then
-  echo "Error: No Internet connection."
+if [ `test_connection` = 'FALSE' ]; then
+  echo "Error: No Internet connection; cannot install Alfred Bundler"
+
+read -d '' script <<-"_EOF_"
+  display dialog "A workflow you just invoked relies on the Alfred Bundler, which is currently not installed. Please try again when you are connected to the Internet, and things will take care of themselves." buttons {"OK"} default button 1 with title "Error | Cannot Reach Server" with icon Caution giving up after 10
+_EOF_
+
+  osascript -e "$script" > /dev/null
   exit 1
 fi
 
+if [ -f "$data/assets/setup-complete" ]; then
+  rm "$data/assets/setup-complete"
+fi
+
 # Okay, we have an internet connection, so we'll start this sucker up.
-"$path/check-setup.sh &> /dev/null"
+# nohup "$path/check-setup.sh" > /dev/null 2>&1 &
+"$path/check-setup.sh" &
 tmpPID=`echo $$`
 
 # Third, let's download the bundler wrapper if it isn't there.
@@ -82,6 +97,8 @@ if [ ! -f "$tn" ]; then
     exit 1
   fi
 fi
+
+touch "$data/assets/setup-complete"
 
 # That's it. We're all good to go. The backgrounded check_setup.sh should
 # call Alfred and Cron again within the next 10 seconds.
